@@ -52,18 +52,18 @@ if ($lang eq 'c') {
   $iscppf = $arglist =~ s/GM_ISCPP//;
   if ($mtype eq "mex") {
     if ($iscppf) {
-      $linker = 'dllwrap --driver-name c++';
+      $linker = 'g++ -shared';
     } else {
-      $linker = 'dllwrap';
+      $linker = 'gcc -shared';
     }
   } else { # engine
-      $linker = "g++";
+    $linker = "g++";
   }
 } else { # fortran
   if ($mtype eq "mex") {
-    $linker = 'dllwrap --driver-name g77';
+    $linker = 'g77 -shared';
   } else {
-      $linker = "g77";
+    $linker = "g77";
   }
 }
 
@@ -93,7 +93,7 @@ if ($mtype eq 'mex') {
   print $message unless ($message eq "");
   
   # command to make mex dll
-  $cmd = join(" ", $linker, '--def mex.def', $arglist,
+  $cmd = join(" ", $linker, 'mex.def', $arglist,
 	      'fixup.o', $addlibs, @libnames);
 } else { # engine file
   $cmd = join(" ", $linker,$arglist, @libnames, 
@@ -101,11 +101,10 @@ if ($mtype eq 'mex') {
 }
 
 # execute via backticks (system doesn't work on W9x)
-print $cmd . "\n";
-print "$linker\n";
+# print $cmd . "\n";
 $message = `$cmd`;
 
 if ($mtype eq 'mex') {
 # Cleanup
-    unlink "mex.def", "fixup.c", "fixup.o";
+  unlink "mex.def", "fixup.c", "fixup.o";
 }
