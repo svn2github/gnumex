@@ -1,5 +1,5 @@
 function varargout = gnumex(varargin)
-% mex bat options file creator for Cygwin 1.1 /mingw gcc
+% mex bat options file creator for cygwin / mingw gcc
 %
 % Updated for matlab version 6, rationalized perl
 % Facility for added libraries, Fortran engine compilation
@@ -12,7 +12,7 @@ function varargout = gnumex(varargin)
 % (at your option) any later version.
 
 % current version number
-VERSION = 1.08;
+VERSION = 1.09;
 
 if nargin < 1
   action = 'startup';
@@ -660,6 +660,15 @@ elseif (strcmp(action, 'makeopt'))
   end
   gccpath = fullfile(gccpath, 'bin');
   
+  % dlltool command needs to be custom thing for 
+  % Fortran linking)in Matlab < 6;
+  if mlv < 6 || pps.lang == 2
+    dllcmd = [pps.gnumexpath '\mexdlltool -E --as ' ...
+	    gccpath '\as.exe'];
+  else
+    dllcmd = 'dlltool';
+  end
+
   % check that the right one of mingw/cygwin has been selected
   cpf = exist(fullfile(gccpath,'cygpath.exe'),'file'); 
   if pps.mingwf == 1 & cpf
@@ -704,11 +713,7 @@ elseif (strcmp(action, 'makeopt'))
       librootn = 'fenglib';
     end	
   end
-  
-  % dlltool command (for Fortran linking)
-  dllcmd = [pps.gnumexpath '\mexdlltool -E --as ' ...
-	    gccpath '\as.exe'];
-  
+    
   % create libraries if precomp option required
   if (pps.safef == 2)
     dlgt = 'Precompiled libraries problem';
@@ -979,6 +984,40 @@ elseif (strcmp(action, 'report'))
 	       ['Language: ' lang],...
 	       ['Compiling for ' cpu ' and above']}};
 
+elseif (strcmp(action, 'make'))
+  
+  % makes compiled mex routines
+  % Crude and highly fallible 
+  
+  warn_str = {'You will need a working default mexopts.bat file',...
+	      ['which compiles dlls, that are _not_ ' ...
+	       'linked to the cygwin* .dll'],...
+	     'lcc should work: >> mex -setup'};	      
+  warning(sprintf('%s\n', warn_str{:}));
+  
+  % detect lcc compiler
+  [a str] = unix('mex -v');
+  lccf = ~isempty(findstr('= lcc', str));
+  
+  pstruct = gnumex('fig_def2struct');
+  src_path = fullfile(pstruct.gnumexpath, 'src');
+  pwd_store = pwd;
+  cd(pstruct.gnumexpath);
+  try
+    mex(fullfile(src_path, 'shortpath.c'));
+    if lccf
+      lcc_lib = fullfile(matlabroot, 'sys\lcc\lib\shell32.lib');
+      mex(fullfile(src_path, 'uigetpath.c'), lcc_lib);
+    else
+      mex(fullfile(src_path, 'uigetpath.c'));
+    end
+    % now gnumex should work on its own, to get gcc etc paths
+    opt_file = 'makeopts.bat';
+    gnumex('mingw', 'eng', 'optfile=makeopts.bat');
+    mex('-f', opt_file, fullfile(src_path, 'mexgcc.c'));
+  end
+  cd(pwd_store);
+  
 elseif (strcmp(action, 'test'))
   % Rather hackey test script 
 
