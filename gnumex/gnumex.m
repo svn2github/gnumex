@@ -12,7 +12,7 @@ function varargout = gnumex(varargin)
 % (at your option) any later version.
 
 % current version number
-VERSION = 1.09;
+VERSION = 1.10;
 
 if nargin < 1
   action = 'startup';
