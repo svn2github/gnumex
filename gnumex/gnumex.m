@@ -661,8 +661,8 @@ elseif (strcmp(action, 'makeopt'))
   gccpath = fullfile(gccpath, 'bin');
   
   % dlltool command needs to be custom thing for 
-  % Fortran linking)in Matlab < 6;
-  if mlv < 6 & pps.lang == 2
+  % Fortran linking
+  if pps.lang == 2
     dllcmd = [pps.gnumexpath '\mexdlltool -E --as ' ...
 	    gccpath '\as.exe'];
   else
@@ -887,17 +887,14 @@ end
 linker = '%GM_PERLPATH% %GM_UTIL_PATH%\linkmex.pl';
 if (pps.mexf == 1)    % mexf compile
   oext = 'dll';
-  if (pps.mingwf == 3)
-    linkfs = ['--target=i386-mingw32 ' linkfs];
-  end
-else                 % engine compile
+else                  % engine compile
   oext = 'exe';
 end
 
 % resource linker parameters
 if (pps.mingwf == 1)    % mingw compile
   rclinkfs = '';
-else                  % cygwin or cygwin/mingwcompile
+else                  % cygwin or cygwin/mingw compile
   rclinkfs = '--unix';
 end
 
