@@ -12,7 +12,7 @@ function varargout = gnumex(varargin)
 % (at your option) any later version.
 
 % current version number
-VERSION = 1.10;
+VERSION = 1.11;
 
 if nargin < 1
   action = 'startup';
@@ -631,12 +631,19 @@ elseif (strcmp(action, 'makeopt'))
     engdefs = {'libmx.def', 'libeng.def', 'libmat.def'};
     fmexdefs = {'df50mex.def'};
     fengdefs = {'dfmx.def', 'dfmat.def', 'dfeng.def'};
-  else % matlab 6    
+  elseif mlv < 7 % matlab 6    
     mexdefs = {'libmx.def', 'libmex.def',...
 	       'libmat.def', '_libmatlbmx.def'};
     engdefs = {'libmx.def', 'libeng.def', 'libmat.def'};    
     fmexdefs = {'libmx.def', 'libmex.def',...
 	       'libmat.def', '_libmatlbmx.def'};
+    fengdefs = {'libmx.def', 'libeng.def', 'libmat.def'};    
+  else % matlab 7    
+    mexdefs = {'libmx.def', 'libmex.def',...
+	       'libmat.def'};
+    engdefs = {'libmx.def', 'libeng.def', 'libmat.def'};    
+    fmexdefs = {'libmx.def', 'libmex.def',...
+	       'libmat.def'};
     fengdefs = {'libmx.def', 'libeng.def', 'libmat.def'};    
   end
 
