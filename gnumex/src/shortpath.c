@@ -4,12 +4,11 @@
 
 #include <windows.h>
 #include <string.h>
-#include <dirent.h>
 #include "mex.h"
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-  char *inpath, outpath[_MAX_PATH];
+  char *inpath, outpath[MAX_PATH];
   DWORD len;
 
   if (nlhs < 1)
@@ -23,7 +22,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   len = GetShortPathName(
 			 inpath,
 			 outpath,
-			 _MAX_PATH
+			 MAX_PATH
 			 );
 
   if (len==0) /* error, maybe doesn't support 8.3 names */
