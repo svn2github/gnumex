@@ -662,7 +662,7 @@ elseif (strcmp(action, 'makeopt'))
   
   % dlltool command needs to be custom thing for 
   % Fortran linking)in Matlab < 6;
-  if mlv < 6 || pps.lang == 2
+  if mlv < 6 & pps.lang == 2
     dllcmd = [pps.gnumexpath '\mexdlltool -E --as ' ...
 	    gccpath '\as.exe'];
   else
@@ -1123,7 +1123,7 @@ else % otherwise unrecognized option
 	p = char(p);
 	p_st = length(p)+ 2;
 	if isempty(strmatch([p '='], arg)) ...
-	      || length(arg) < p_st
+	      | length(arg) < p_st
 	  errstr{end+1} = ['Path syntax is ' p '=[path]'];
 	else
 	  pstruct = setfield(pstruct,...
