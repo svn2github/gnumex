@@ -1,5 +1,7 @@
 /* uigetpath */
-/* you'll need gcc 2.95.2 for this, with its updated windows headers */
+/* to compile with lcc:
+   mex uigetpath c:\matlab6p5\sys\lcc\lib\user32.lib
+*/
 
 #include <windows.h>
 #include <shlobj.h>
@@ -11,7 +13,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   /* browse for directory path name */
   /* arg (if defined) is prompt shown at top of dialog box */
   int len, okf = FALSE;
-  char strbuf[_MAX_PATH];
+  char strbuf[MAX_PATH];
   char *title = "Choose directory";
 
   BROWSEINFO bi;
