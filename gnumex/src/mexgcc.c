@@ -49,7 +49,7 @@ int main( int argc, char *argv[ ])
 	argvcp[i] = NULL;
 
 	/* do gcc */
-	okf=spawnvp(_P_WAIT, prog, argvcp);
+	okf=spawnvp(_P_WAIT, prog, (const char **)argvcp);
 	  
 	/* free arg copy */
 	for (i=0;i<argc;i++) free(argvcp[i]); free(argvcp);
