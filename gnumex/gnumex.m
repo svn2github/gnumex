@@ -971,11 +971,11 @@ elseif (strcmp(action, 'report'))
    case 1 
     cpu = 'pentium';
    case 2 
-    cpu = 'pentium II';
+    cpu = 'pentium 2';
    case 3
-    cpu = 'pentium III';
+    cpu = 'pentium 3';
    case 4
-    cpu = 'pentium IV';
+    cpu = 'pentium 4';
   end
   
   varargout = {{[lnk ' linking'],...
@@ -984,40 +984,6 @@ elseif (strcmp(action, 'report'))
 	       ['Language: ' lang],...
 	       ['Compiling for ' cpu ' and above']}};
 
-elseif (strcmp(action, 'make'))
-  
-  % makes compiled mex routines
-  % Crude and highly fallible 
-  
-  warn_str = {'You will need a working default mexopts.bat file',...
-	      ['which compiles dlls, that are _not_ ' ...
-	       'linked to the cygwin* .dll'],...
-	     'lcc should work: >> mex -setup'};	      
-  warning(sprintf('%s\n', warn_str{:}));
-  
-  % detect lcc compiler
-  [a str] = unix('mex -v');
-  lccf = ~isempty(findstr('= lcc', str));
-  
-  pstruct = gnumex('fig_def2struct');
-  src_path = fullfile(pstruct.gnumexpath, 'src');
-  pwd_store = pwd;
-  cd(pstruct.gnumexpath);
-  try
-    mex(fullfile(src_path, 'shortpath.c'));
-    if lccf
-      lcc_lib = fullfile(matlabroot, 'sys\lcc\lib\shell32.lib');
-      mex(fullfile(src_path, 'uigetpath.c'), lcc_lib);
-    else
-      mex(fullfile(src_path, 'uigetpath.c'));
-    end
-    % now gnumex should work on its own, to get gcc etc paths
-    opt_file = 'makeopts.bat';
-    gnumex('mingw', 'eng', 'optfile=makeopts.bat');
-    mex('-f', opt_file, fullfile(src_path, 'mexgcc.c'));
-  end
-  cd(pwd_store);
-  
 elseif (strcmp(action, 'test'))
   % Rather hackey test script 
 
