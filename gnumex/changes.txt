@@ -1,0 +1,51 @@
+CHANGES TO GNUMEX BETWEEN VERSIONS 1.11 AND 1.12.
+
+1. The mex-files uigetpath and shortpath have been recompiled and the new
+   versions are compatible with, and called if, the Matlab version is >= 7.4.
+   Comments at the start of uigetpath.c and shortpath.c have been modified
+   (but otherwise these files are unchanged).
+
+2. Gnumex now creates .def-files if needed. Starting with Matlab 7.4 there are
+   no libmex.def, libmx.def and libmat.def that come with Matlab. In earlier
+   Matlab versions these reside in <matlabroot>\extern\include.
+
+3. The gcc option -mcpu=pentium has been deprecated (from gcc version 3.4.0
+   according to "Google"), and instead one Gnumex uses -march=pentium which is 
+   also comptible with older gcc versions
+
+4. The -mrtd flag has been removed for Fortran compilation (KJ had a nasty
+   crash with a Fortran program using large arrays and could not resolve it
+   the -mrtd flag was dropped).
+
+5. The mex file extension was changed from .dll to .mexw32 in Matlab version
+   7.1 and the new Gnumex honours this.
+
+6. An anonymous function is used for "fp" instead of inline if the Matlab
+   version is >= 7.0 (this speeds up Gnumex).
+
+7. A bug was fixed on line 733 of version 1.11 gnumex.m. When directories were
+   nonexistent fp was used without being defined.
+
+8. The switch -funroll-all-loops has been added to Fortran compilation.
+
+9. A potential "year-2000" problem with mlv was fixed. The old definition
+   would fail if and when Matlab reaches version 10.
+
+10. The switch -fleading-underscore was removed from Fortran compilation (it
+    is the default anyway, and just causes confusion with the switch
+    -fno-underscoring, which is necessary)
+
+11. Gnumex now locates both the Cygwin and Mingw folders (or does its best to
+    locate them), instead of setting the Mingw folder always to c:\Mingw.
+
+12. Gnumex now defaults to using Mingw instead of Cygwin, unless it finds
+    Cygwin and not Mingw, for reasons explained in the README.TXT file.
+
+13. A g77-compatible example mex Fortran program accompanies Gnumex 1.12.
+
+14. A new README file has been written.
+
+Except for no. 1, 13 and 14 these changes all only affect gnumex.m. In
+particular, there are no changes to linkmex.pl.
+
+Kristjan Jonasson (jonasson@hi.is)

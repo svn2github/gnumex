@@ -1,6 +1,10 @@
 /* shortpath */
 /* return short form path name for long form */
 /* second  arg is a long form path name */
+/* to compile with lcc:
+     to make sure lcc is used delete mexopts.bat in the prefdir folder
+     (>> delete ([prefdir '\mexopts.bat'])). Then do:
+     >> mex shortpath.c
 
 #include <windows.h>
 #include <string.h>

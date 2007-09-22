@@ -1,5 +1,83 @@
-gnumex README
--------------
+SUMMARY OF GNUMEX USAGE
 
-See http://gnumex.sourceforge.net for instructions on installing and
-configuring gnumex.
+For more information see the detailed guidelines in [1]. They were written in
+2004, but are still (2007) pretty much up-to-date. Gnumex enables mex files
+for C, C++ and Fortran to be created with gcc, and subsequently called from
+Matlab. The following steps are involved:
+
+CHOOSE EITHER MINGW OR CYGWIN as the gcc environment. It is recommended that
+   Mingw be used because (A) Gnumex is not compatible with the most recent
+   versions of Cygwin, and (B) mex dll files compiled with cygwin crash Matlab
+   when reloaded. Both of these problems have been actual at least since 2004,
+   and are discussed in [1].
+
+   TO INSTALL MINGW:
+   Visit www.mingw.org. Select "Download" and then "Sourceforge File Release".
+   (Currently: http://sourceforge.net/project/showfiles.php?group_id=2435).
+   Dowload the "Automated MinGW Installer", run it and install at least the
+   MinGW base tools and the g++ compiler (and g77 if you want Fortran).
+
+   TO INSTALL CYGWIN:
+   As said above you need an older version of Cygwin. Visit the web page
+   http://ptolemy.eecs.berkeley.edu/ptolemyII/ptII4.0/cygwin.htm, download
+   cygwinDevel.exe (35.4Mb) and follow the instruction on the web page.
+
+NOW RUN GNUMEX. Cd to the folder where Gnumex is installed and type "gnumex"
+   at the Matlab prompt. This brings up a GUI-window. Make appropriate choices
+   (see [1]) and select "Make opts". 
+
+   This will ceate libraries of mex-, mx- and mat-functions ready to be called
+   from C or Fortran programs (in Matlab 7.4 and later a preliminary step is
+   the creation of .def-files in the Gnumex folder). Gnumex will also create a
+   configuration file for the Matlab mex-command, called "options.bat" by
+   default. The configuration file sets gcc to be the compiler, and a
+   perl-script, linkmex.pl, that is part of gnumex to be the linker. It also
+   points to the libraries, and sets appropriate options for the compilation
+   and linking.
+
+   There are two sensible choices for the config file, in the Matlab "prefdir"
+   folder (e.g. "C:\Documents and Settings\jonasson\Application
+   Data\MathWorks\MATLAB\R2007a"; its location is returned by the Matlab
+   prefdir command) or in the folder where the sources of the C (or Fortran)
+   programs are.
+
+WRITE A GATEWAY ROUTINE in C or Fortran which will be called from Matlab and
+   calls the computational routines. The gateway routine must be named
+   mexFunction. For details refer to the Matlab documentation (in the newest
+   Matlabs the chapter is called "Calling C and Fortran Programs from
+   Matlab"). For Fortran programs the accompanying file, readme-fortran.txt,
+   contains more information.
+
+TO CREATE MEX-FILES use the Matlab mex command. It will by default look for a
+   config file named "mexopts.bat" in the current folder, and if not found
+   there in the prefdir folder. One can also use a -f switch to point to a
+   different config file. See the Matlab documentation on "mex", and the link
+   therein to "mex script switches" for details (note for instance that it is
+   possible to override the default flags from Gnumex with commands such as
+   "mex -c OPTIMFLAGS='$OPTIMFLAGS -o2 yprime.c" -- before version 7.3 or 7.2
+   one must use # instead of =). Mex compiles and links C or Fortran programs
+   and creates mex-files with extension .mexw32 (.dll in Matlab 7.0 and
+   earlier) callable from Matlab. With a -c switch, mex compiles only and
+   creates files with extension .obj -- .obj files are valid inputs for
+   subsequent mex-commands.
+
+EXAMPLE C MEXING
+   To try out mex-file creation copy the file yprime.c from the Matlab examples
+   folder to the current folder, compile it with mex and call yprime. After
+   running gnumex (for C) you can issue from the Matlab prompt:
+       >> copyfile([matlabroot '\extern\examples\mex\yprime.c'])
+       >> mex yprime.c
+       >> yprime(1, 1:4)
+   and should receive the answer yp = 2.0000  8.9685  4.0000  -1.0947.
+
+ACCOMPANYING DOCUMENTATION AND EXAMPLE FILES:
+   readme-fortran.txt  Some comments on Fortran mexing
+   yprime_g77.f        A g77 compatible example Fortran gateway routine
+   yprimef.f           An example computational routine for yprime_g77
+   changes.txt         Lists changes between Gnumex versions 1.11 and 1.12
+   README              This file
+
+REFERENCES
+   [1] http://gnumex.sourceforge.net
+
+Kristjan Jonasson, August 2007 (jonasson@hi.is)

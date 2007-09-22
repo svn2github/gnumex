@@ -1,6 +1,8 @@
 /* uigetpath */
 /* to compile with lcc:
-   mex uigetpath c:\matlab6p5\sys\lcc\lib\user32.lib
+     to make sure lcc is used delete mexopts.bat in the prefdir folder
+     (>> delete ([prefdir '\mexopts.bat'])). Then do:
+     >> mex uigetpath.c shell32.lib user32.lib
 */
 
 #include <windows.h>
