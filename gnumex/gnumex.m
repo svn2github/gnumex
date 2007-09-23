@@ -395,9 +395,9 @@ function varargout = gnumex(varargin)
     
     % safe / quick defaults
     if mlv >= 6  % matlab version 6 or greater
-      safef = 2;
+      safef = 2; % quick
     else
-      safef = 1;
+      safef = 1; % safe
     end
 
     % options file name
@@ -540,13 +540,13 @@ function varargout = gnumex(varargin)
     pstruct = varargin{2};
 
     % check only path for selected compile type
-    if pstruct.mingwf == 1
+    if pstruct.mingwf == 1 | pstruct.mingwf == 3
       outvs = fdwarn(fullfile(pstruct.mingwpath, 'bin'), 'gcc.exe');
     else
       cgwbin = fullfile(pstruct.cygwinpath, 'bin');
       outvs = fdwarn(cgwbin, 'gcc.exe');
       if outvs{1}
-        % Check that gcc is ok has version <= 3.2
+        % Check that gcc is ok (has version <= 3.2)
         [err,verss] = dos([fullfile(cgwbin, 'gcc.exe') ' -dumpversion']);
         if err
           outvs = [outvs; {0, 'unable to obtain gcc version'}];
@@ -567,9 +567,12 @@ function varargout = gnumex(varargin)
     varargout = {1, ''};
     if pstruct.mingwf ~= 1
       whichcmd = fullfile(pstruct.cygwinpath, 'bin', 'which.exe');
+      lscmd = fullfile(pstruct.cygwinpath, 'bin', 'ls.exe');
       [err,reslt] = dos([whichcmd ' cygwin1.dll']);
-      if ~err & ~exist(reslt, 'file') % if which is not found don't bother and return ok
-        varargout = {0, 'With mex-files from cygwin, cygwin1.dll must be on the Windows path'};
+      if ~err % if which is not found don't bother and return ok
+        [err,reslt] = dos([lscmd ' ' reslt]);
+        st = 'With mex-files from cygwin, cygwin1.dll must be on the Windows path';
+        if err, varargout = {0, st}; end
       end
     end
 
@@ -590,7 +593,7 @@ function varargout = gnumex(varargin)
         else
           s = shortpath(s);
         end
-        while (s(end) == '\')
+        while ~isempty(s) & s(end) == '\'
           s = s(1:end-1);
         end
         pstruct = setfield(pstruct, fnames{i}, s);
@@ -600,14 +603,15 @@ function varargout = gnumex(varargin)
     
   elseif (strcmp(action, 'makedeffiles'))
     % Use nm.exe to extract the names of mex-, mx- and mat-functions from
-    % .lib-files in Matlab's lcc library folder and writes them to .def
-    % files in the current folder. These .def-files can then be used as
+    % .lib-files in Matlab's lcc library folder and write them to .def
+    % files in the gnumex.m folder. These .def-files can then be used as
     % input to dlltool to create .lib-files in a format apropriate for
     % gcc. From version 7.4 of Matlab no def-files come with matlab, but
     % this provides a workaround.
     nmcmd = varargin{2};
     deffiles = varargin{3};
-    % libs will probably be {'libmex', 'libmx', 'libmat'};
+    defdir = varargin{4};
+    % libs will probably be {'libmex', 'libmx', 'libmat', 'libeng'};
     libdir = [matlabroot '\extern\lib\win32\lcc\'];
     for i=1:length(deffiles)
       [p, lib] = fileparts(deffiles{i});
@@ -616,7 +620,7 @@ function varargout = gnumex(varargin)
       tok = textscan(list,'%*s%s%s%*[^\n]');
       code = char(tok{1});
       symbols = tok{2}(code=='T');
-      fid = fopen(deffiles{i}, 'w');
+      fid = fopen([defdir '\' deffiles{i}], 'w');
       if fid < 0, error (['Cannot open file ' deffiles{i} ' for writing']); end
       fprintf(fid, 'LIBRARY %s.dll\nEXPORTS\n', lib);
       J = strmatch('_', symbols)';
@@ -689,11 +693,9 @@ function varargout = gnumex(varargin)
         'libmat.def', '_libmatlbmx.def'};
       fengdefs = {'libmx.def', 'libeng.def', 'libmat.def'};
     else % matlab 7
-      mexdefs = {'libmx.def', 'libmex.def',...
-        'libmat.def'};
-      engdefs = {'libmx.def', 'libeng.def', 'libmat.def'};
-      fmexdefs = {'libmx.def', 'libmex.def',...
-        'libmat.def'};
+      mexdefs =  {'libmx.def', 'libmex.def', 'libmat.def'};
+      engdefs =  {'libmx.def', 'libeng.def', 'libmat.def'};
+      fmexdefs = {'libmx.def', 'libmex.def', 'libmat.def'};
       fengdefs = {'libmx.def', 'libeng.def', 'libmat.def'};
     end
 
@@ -710,9 +712,10 @@ function varargout = gnumex(varargin)
       if gui_f, warndlg(msg, 'Path warning'); uiwait        
       else      warning(msg); end
     end
-
+    
     if mlv >= 7.4
-      deffiles = strcat(pps.gnumexpath, '\', mexdefs); 
+      path_to_deffiles = pps.gnumexpath;
+      deffiles = strcat(path_to_deffiles, '\', union(mexdefs,engdefs)); 
       if ~all(paths_exist(deffiles))
         % Check that nm.exe can be found
         nm = fullfile(pps.cygwinpath, 'bin', 'nm.exe');
@@ -723,9 +726,11 @@ function varargout = gnumex(varargin)
         else
           disp('Making .def-files ...');
         end
-        gnumex('makedeffiles', nm, deffiles);
+        gnumex('makedeffiles', nm, deffiles, path_to_deffiles);
         if gui_f, set(gcf, 'Pointer', 'arrow'); end
       end
+    else
+      path_to_deffiles = [mlr '\extern\include'];
     end
     
     % Optimization rules for Pentiums 1:4
@@ -799,11 +804,7 @@ function varargout = gnumex(varargin)
     % create libraries if precomp option required
     if (pps.safef == 2)
       dlgt = 'Precompiled libraries problem';
-      if mlv >= 7.4
-        INCROOT = [pps.precompath '\'];
-      else
-        INCROOT = [mlr '\extern\include\'];
-      end
+      INCROOT = [path_to_deffiles '\'];
       %DESTPATH = [pps.precompath '\'];
 
       % check for files to rewrite, make directory if doesn't exist
@@ -892,7 +893,7 @@ function varargout = gnumex(varargin)
     rep = char(gnumex('report', pps));
 
     % inline functin for printing to options .bat file
-    %if mlv >= 7.5
+    %if mlv >= 7.4
     %  fp = @(x) fprintf(fid, '%s\n', x);
     %else
       fp = inline(['fprintf(' num2str(fid) ', ''%s\n'', x)']);
@@ -929,6 +930,8 @@ function varargout = gnumex(varargin)
       fp(['set GM_QLIB_NAME=' pps.precompath]);
       fp('rem');
     end
+    fp('rem directory for .def-files');
+    fp(['set GM_DEF_PATH=' path_to_deffiles]);
     fp('rem Added libraries for linking');
     fp(['set GM_ADD_LIBS=' sepcat(add_libs, ' ')]);
     fp('rem');
@@ -1080,31 +1083,46 @@ function varargout = gnumex(varargin)
 
   elseif (strcmp(action, 'test'))
     % Rather hackey test script
-
+    % Usage: gnumex('test', cygwinoldpath, testf)
+    %   for example: gnumex test
+    %   or:          gnumex test c:\cygwin_old
+    %   or:          gnumex test c:\cygwin_old 1
+    %
+    % NOTE: no-cygwin (ctype=3) does not work with old cygwin (the one with gcc
+    %       3.2) but cygwin only works with the old cygwin. So to test properly
+    %       both versions of cygwin must be present. For testing, it is assumed
+    %       that the new version is returned by gnumex('fig_def2struct') below,
+    %       and the old cygwin path is pointed to by the command line argument.
+    
     % arg - testf
-    % non-zero if we are testing output of yprime dll
-    % This causes matlab to crash and die
-    % after a few Cygwin tests on my machine
-    if nargin < 2
-      testf = 0;
+    % non-zero if we are testing output of yprime dll with cygwin
+    % This causes matlab to crash and die after a few Cygwin tests on my machine
+    testf = 0;
+    cygwin_old_path = '';
+    if nargin >= 3
+      testf = varargin{3};
     end
-
+    if nargin >= 2
+      cygwin_old_path = varargin{2};
+    end
     % File to save results
     flagfile = 'checked.mat';
 
     % path to file examples
+    fortran_mexfun = 'yprime_g77';
     exroot = fullfile(matlabroot, 'extern', 'examples');
-
+    fexpath = findmfile('gnumex');
+    fortran_examples = {fullfile(fexpath, [fortran_mexfun '.f']) ...
+      ,                 fullfile(fexpath, 'yprimef.f')};
     % file examples
     % 4x4 cell matrix, col 1 mex, col 2 eng, row 1 c row 2 fortran
     mexstr{1,1} = {fullfile(exroot, 'mex', 'yprime.c')};
-    mexstr{2,1} = {fullfile(exroot, 'mex', 'yprimefg.f')...
-      fullfile(exroot, 'mex', 'yprimef.f')};
-    mexstr{1,2} = {fullfile(exroot, 'eng_mat', 'engdemo.c')};
-    mexstr{2,2} = {fullfile(exroot, 'eng_mat', 'fengdemo.f')};
+    mexstr{2,1} = fortran_examples;
+    mexstr{1,2} = {fullfile(exroot, 'eng_mat', 'engwindemo.c')};
+    mexstr{2,2} = {fullfile(fexpath, 'fengdemo.f')};
 
     % c and fortran versions of evals to test (testf = 1)
-    mexteststr = {'yprime(1, 1:4)', 'yprimefg(1, 1:4)'};
+    mexteststr = {'yprime(1, 1:4)', [fortran_mexfun '(1, 1:4)']};
 
     % correct result from yprime
     corr_r = [2.0000    8.9685    4.0000   -1.0947];
@@ -1113,28 +1131,38 @@ function varargout = gnumex(varargin)
     pstruct = gnumex('fig_def2struct');
     pstruct.precompath = pwd;
     pstruct.optfile = fullfile(pwd,'testopts.bat');
+    cygwinpath = pstruct.cygwinpath;
 
     % delete existing libaries, checked flag file
-    delete *.lib
+    %  --- No. don't delete them to make the test run faster!
+    % delete *.lib 
     if exist(flagfile, 'file')
       delete(flagfile)
     end
 
     % test each in turn
     success = cell(3,2,2,2);
-    for ctype = 1:3
+    for ctype = 1:3  % mingw, cygwin, mno-cygwin
       pstruct.mingwf = ctype;
-      for safef = 1:2
+      if ~isempty(cygwin_old_path) & ctype == 2
+        pstruct.cygwinpath = cygwin_old_path; 
+      else
+        pstruct.cygwinpath = cygwinpath;
+      end
+      for safef = 1:2  % create libs, use precompiled
         pstruct.safef = safef;
-        for lang = 1:2
+        for lang = 1:2  % c, fortran
           pstruct.lang = lang;
-          clear yprime yprimefg
-          for targ = 1:2
+          clear yprime
+          clear(fortran_mexfun)
+          for targ = 1:2  % mex, engine
+            if targ == 2 & ctype == 2, continue, end 
+            %                                 (engine doesn't work with cygwin)
             pstruct.mexf = targ;
             try
               gnumex('makeopt', pstruct, 0);
               mex('-f', pstruct.optfile, mexstr{lang, targ}{:});
-              if targ == 1 & testf  % only test yprime
+              if targ == 1 & (ctype ~= 2 | testf)
                 r = eval(mexteststr{lang});
                 if any((r - corr_r) > eps)
                   error(['Mex gave ' num2str(r)]);
@@ -1151,8 +1179,10 @@ function varargout = gnumex(varargin)
     end
 
     % delete existing libaries, clear dll
-    delete *.lib
-    clear yprime yprimefg
+    %  --- No. don't delete them to make the test run faster!
+    % delete *.lib
+    clear yprime
+    clear(fortran_mexfun)
 
     % save flag file
     save(flagfile, 'success');

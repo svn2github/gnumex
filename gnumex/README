@@ -9,7 +9,10 @@ CHOOSE EITHER MINGW OR CYGWIN as the gcc environment. It is recommended that
    Mingw be used because (A) Gnumex is not compatible with the most recent
    versions of Cygwin, and (B) mex dll files compiled with cygwin crash Matlab
    when reloaded. Both of these problems have been actual at least since 2004,
-   and are discussed in [1].
+   and are discussed in [1]. It is also possible to use the mixture, where
+   cygwin gcc is used with the -mno-cygwin switch (called cygwin-mingw in the
+   Gnumex window). For this a current cygwin version should be used, and it
+   probably does not crash Matlab.
 
    TO INSTALL MINGW:
    Visit www.mingw.org. Select "Download" and then "Sourceforge File Release".
@@ -17,10 +20,14 @@ CHOOSE EITHER MINGW OR CYGWIN as the gcc environment. It is recommended that
    Dowload the "Automated MinGW Installer", run it and install at least the
    MinGW base tools and the g++ compiler (and g77 if you want Fortran).
 
-   TO INSTALL CYGWIN:
+   TO INSTALL OLD CYGWIN:
    As said above you need an older version of Cygwin. Visit the web page
    http://ptolemy.eecs.berkeley.edu/ptolemyII/ptII4.0/cygwin.htm, download
    cygwinDevel.exe (35.4Mb) and follow the instruction on the web page.
+
+   TO INSTALL CURRENT CYGWIN:
+   Visit www.cygwin.com and choose "install or update cygwin now". Be sure to
+   install at least binutils, gcc-core, gcc-g++, and gcc-g77 for Fortran.
 
 NOW RUN GNUMEX. Cd to the folder where Gnumex is installed and type "gnumex"
    at the Matlab prompt. This brings up a GUI-window. Make appropriate choices
@@ -74,10 +81,11 @@ ACCOMPANYING DOCUMENTATION AND EXAMPLE FILES:
    readme-fortran.txt  Some comments on Fortran mexing
    yprime_g77.f        A g77 compatible example Fortran gateway routine
    yprimef.f           An example computational routine for yprime_g77
+   fengdemo.f          Example Fortran engine program
    changes.txt         Lists changes between Gnumex versions 1.11 and 1.12
    README              This file
 
 REFERENCES
    [1] http://gnumex.sourceforge.net
 
-Kristjan Jonasson, August 2007 (jonasson@hi.is)
+Kristjan Jonasson, September 2007 (jonasson@hi.is)

@@ -27,11 +27,12 @@ if ($ENV{'GM_QLIB_NAME'} ne "") {
 } else {
     # doh! We'll have to create them
     $libname = $ENV{'LIB_NAME'};
-    $mlpath = $ENV{'MATLAB'};
+    $defpath = $ENV{'GM_DEF_PATH'};
+#    $mlpath = $ENV{'MATLAB'};
+#    if ($defpath eq "") { $defpath = "$mlpath\\extern\\include"; }
     $libno = 1;
     foreach $lib(@libs) {
-	$cmd = "$dllcmd --def $mlpath\\extern\\include\\$lib" .
-	    " --output-lib \"${libname}${libno}.lib\"";
+	$cmd = "$dllcmd --def $defpath\\$lib --output-lib \"${libname}${libno}.lib\"";
 	$message = `$cmd`;
 	print $message unless ($message eq "");
 	$libno += 1;
