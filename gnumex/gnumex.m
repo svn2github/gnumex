@@ -610,7 +610,7 @@ function varargout = gnumex(varargin)
     % this provides a workaround.
     nmcmd = varargin{2};
     deffiles = varargin{3};
-    defdir = varargin{4};
+    % defdir = varargin{4};
     % libs will probably be {'libmex', 'libmx', 'libmat', 'libeng'};
     libdir = [matlabroot '\extern\lib\win32\lcc\'];
     for i=1:length(deffiles)
@@ -620,7 +620,8 @@ function varargout = gnumex(varargin)
       tok = textscan(list,'%*s%s%s%*[^\n]');
       code = char(tok{1});
       symbols = tok{2}(code=='T');
-      fid = fopen([defdir '\' deffiles{i}], 'w');
+      %fid = fopen([defdir '\' deffiles{i}], 'w');
+      fid = fopen(deffiles{i}, 'w');
       if fid < 0, error (['Cannot open file ' deffiles{i} ' for writing']); end
       fprintf(fid, 'LIBRARY %s.dll\nEXPORTS\n', lib);
       J = strmatch('_', symbols)';
@@ -726,7 +727,8 @@ function varargout = gnumex(varargin)
         else
           disp('Making .def-files ...');
         end
-        gnumex('makedeffiles', nm, deffiles, path_to_deffiles);
+        %gnumex('makedeffiles', nm, deffiles, path_to_deffiles);
+        gnumex('makedeffiles', nm, deffiles);
         if gui_f, set(gcf, 'Pointer', 'arrow'); end
       end
     else
