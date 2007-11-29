@@ -51,3 +51,12 @@ CHANGES TO GNUMEX BETWEEN VERSIONS 1.11 AND 1.12.
 Except for no. 1, 2, 13 and 14 these changes all only affect gnumex.m.
 
 Kristjan Jonasson (jonasson@hi.is)
+
+
+CHANGES BETWEEN VERSION 1.12 AND 1.13
+
+The changes are mostly cosmetic. Comments at the start of gnumex.m were updated
+slightly (and version number corrected). An extraneous file (mexopts.bat) was
+removed and rccompile.pl (which may be needed by some older Windows/Matlab
+versions) was added again (it was somehow lost between v1.11 and v1.12).
+

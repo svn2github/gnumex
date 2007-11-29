@@ -5,14 +5,17 @@ function varargout = gnumex(varargin)
   % Facility for added libraries, Fortran engine compilation
   % Matthew Brett 3/5/2000 (DB), 9/7/2001 (PJ), 19/7/02 (RBH)
   %
-  % Copyright 2000 Free Software Foundation, Inc.
+  % Updated for Matlab 7.4 with some additional changes as detailed
+  % in the accompanying file changes.txt Nov. 2007, Kristjan Jonasson
+  %
+  % Copyright 2000-2007 Free Software Foundation, Inc.
   % This program is free software; you can redistribute it and/or modify
   % it under the terms of the GNU General Public License as published by
   % the Free Software Foundation; either version 2 of the License, or
   % (at your option) any later version.
 
   % current version number
-  VERSION = 1.11;
+  VERSION = 1.13;
   mlv = sscanf(version,'%f',1); % MATLAB VERSION
   if mlv < 5
     error('gnumex will not work for versions before 5.0');
