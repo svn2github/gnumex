@@ -1,4 +1,4 @@
-function varargout = gnumex(varargin)
+  function varargout = gnumex(varargin)
   % mex bat options file creator for cygwin / mingw gcc
   %
   % Updated for matlab version 6, rationalized perl
@@ -70,24 +70,24 @@ function varargout = gnumex(varargin)
       'cd(pwd);if (fn~=0),set(f,''String'',fullfile(p, fn));end'];
 
     % control vs label vertical offsets
-    utxto = -17;
-    ubrwso = -20;
-    lstbo = -15;
+    utxto = -11;
+    ubrwso = -12;
+    lstbo = -18;
 
     % vertical distances between things
-    below_txt = 42;
+    below_txt = 32;
     below_lst = 32;
 
     % horizontal starting points
     lbl_st = 11;
     butt_st = 258;
-    lst_st = 256;
 
     % size for buttons, list boxes
-    butt_sz = [64 20];
-    lbl_sz = [165 13];
-    txt_sz = [227 12];
-    lst_sz = [69 32];
+    butt_sz = [64 15];
+    lbl_sz = [195 13];
+    txt_sz = [237 12];
+    lst_sz = [72 32];
+    lst_x  = gm_sz(1) -10 - lst_sz(1);
 
     % vertical position of current landmark (starts as top of screen)
     landm = gm_sz(2);
@@ -111,7 +111,7 @@ function varargout = gnumex(varargin)
       'Tag','editcygwin');
     c = uicontrol('Parent',cygfig, ...
       'Units','points', ...
-      'Position',[258.207 landm+ubrwso butt_sz], ...
+      'Position',[butt_st landm+ubrwso butt_sz], ...
       'String','Browse', ...
       'UserData', b, ...
       'CallBack', pbrowsecb, ...
@@ -124,7 +124,7 @@ function varargout = gnumex(varargin)
       'Units','points', ...
       'HorizontalAlignment','left', ...
       'Position',[lbl_st landm lbl_sz], ...
-      'String','Mingw root path', ...
+      'String','MinGW root path', ...
       'Style','text', ...
       'Tag','labelmingw');
     b = uicontrol('Parent',cygfig, ...
@@ -137,11 +137,37 @@ function varargout = gnumex(varargin)
       'Tag','editmingw');
     c = uicontrol('Parent',cygfig, ...
       'Units','points', ...
-      'Position',[258.207 landm+ubrwso butt_sz], ...
+      'Position',[butt_st landm+ubrwso butt_sz], ...
       'String','Browse', ...
       'UserData', b, ...
       'CallBack', pbrowsecb, ...
       'Tag','Browse mingw');
+    actfig = [actfig b];
+
+    % gfortran folder
+    landm = landm - below_txt;
+    b = uicontrol('Parent',cygfig, ...
+      'Units','points', ...
+      'HorizontalAlignment','left', ...
+      'Position',[lbl_st landm lbl_sz], ...
+      'String','Directory containing bin\gfortran.exe', ...
+      'Style','text', ...
+      'Tag','labelgfortran');
+    b = uicontrol('Parent',cygfig, ...
+      'Units','points', ...
+      'BackgroundColor',[1 1 1], ...
+      'HorizontalAlignment','left', ...
+      'Position',[lbl_st landm+utxto txt_sz], ...
+      'Style','edit', ...
+      'UserData', 'Select gfortran directory',...
+      'Tag','editgfortran');
+    c = uicontrol('Parent',cygfig, ...
+      'Units','points', ...
+      'Position',[butt_st landm+ubrwso butt_sz], ...
+      'String','Browse', ...
+      'UserData', b, ...
+      'CallBack', pbrowsecb, ...
+      'Tag','Browse gfortran');
     actfig = [actfig b];
 
     % path to these utilities
@@ -163,7 +189,7 @@ function varargout = gnumex(varargin)
       'Tag','editgnumex');
     c = uicontrol('Parent',cygfig, ...
       'Units','points', ...
-      'Position',[258.207 landm+ubrwso butt_sz], ...
+      'Position',[butt_st landm+ubrwso butt_sz], ...
       'String','Browse', ...
       'UserData', b, ...
       'CallBack', pbrowsecb, ...
@@ -176,13 +202,16 @@ function varargout = gnumex(varargin)
       'Units','points', ...
       'HorizontalAlignment','left', ...
       'Position',[lbl_st landm lbl_sz], ...
-      'String','Mingw, Cygwin, or Cygwin-mingw linking?', ...
+      'String','MinGW, Cygwin, Cygwin-MinGW or gfortran linking?', ...
       'Style','text', ...
       'Tag','labelmingwf');
     b = uicontrol('Parent',cygfig, ...
       'Units','points', ...
-      'Position',[256 landm+lstbo lst_sz], ...
-      'String',strvcat('Mingw','Cygwin','Cygwin-mingw'), ...
+      'Position',[lst_x landm+lstbo lst_sz], ...
+      'String',['MinGW       ' ...
+      ;         'Cygwin      ' ...
+      ;         'Cygwin-MinGW' ...
+      ;         'gfortran    '], ...
       'Style','popupmenu', ...
       'Tag','popmingwf', ...
       'Value',1);
@@ -199,7 +228,7 @@ function varargout = gnumex(varargin)
       'Tag','labelmexf');
     b = uicontrol('Parent',cygfig, ...
       'Units','points', ...
-      'Position',[256 landm+lstbo lst_sz], ...
+      'Position',[lst_x landm+lstbo lst_sz], ...
       'String',['Mex dll   ';'Engine exe'], ...
       'Style','popupmenu', ...
       'Tag','popmexf', ...
@@ -217,8 +246,10 @@ function varargout = gnumex(varargin)
       'Tag','labellang');
     b = uicontrol('Parent',cygfig, ...
       'Units','points', ...
-      'Position',[256 landm+lstbo lst_sz], ...
-      'String',['C / C++';'Fortran'], ...
+      'Position',[lst_x landm+lstbo lst_sz], ...
+      'String',['C / C++   ' ...
+      ;         'Fortran 77' ...
+      ;         'Fortran 95'], ...
       'Style','popupmenu', ...
       'Tag','poplang', ...
       'Enable', 'on',...
@@ -236,7 +267,7 @@ function varargout = gnumex(varargin)
       'Tag','labelsafef');
     b = uicontrol('Parent',cygfig, ...
       'Units','points', ...
-      'Position',[256 landm+lstbo lst_sz], ...
+      'Position',[lst_x landm+lstbo lst_sz], ...
       'String',['Safe ';'Quick'], ...
       'Style','popupmenu', ...
       'Tag','popsafef', ...
@@ -254,7 +285,7 @@ function varargout = gnumex(varargin)
       'Tag','labelscpu');
     b = uicontrol('Parent',cygfig, ...
       'Units','points', ...
-      'Position',[256 landm+lstbo lst_sz], ...
+      'Position',[lst_x landm+lstbo lst_sz], ...
       'String',strvcat('All','>=Pentium 2','>=Pentium 3','>=Pentium 4'), ...
       'Style','popupmenu', ...
       'Tag','popcpu', ...
@@ -363,6 +394,7 @@ function varargout = gnumex(varargin)
       'String', ...
       'String', ...
       'String', ...
+      'String', ...
       'Value', ...
       'Value', ...
       'Value', ...
@@ -389,11 +421,15 @@ function varargout = gnumex(varargin)
     % load defaults, return as structure
 
     % Collect sensible defaults
-    [cygwinpath, mingwpath] = find_paths;
-    if ~isempty(mingwpath) | isempty(cygwinpath)
-      mingwf = 1; % mingw compiles are used
+    % if gfortran is installed and neither mingw nor cygwin use gfort
+    % otherwise use mingw unless cygwin is installed and mingw is not
+    [cygwinpath, mingwpath, gfortpath] = find_paths;
+    if isempty(mingwpath) & isempty(cygwinpath) & ~isempty(gfortpath) 
+      mingwf = 4; % gfortran
+    elseif isempty(mingwpath) & ~isempty(cygwinpath)
+      mingwf = 2; % cygwin
     else
-      mingwf = 2; % .. unless cygwin is installed and mingw is not
+      mingwf = 1; % mingw (gcc/g95)
     end
     
     % safe / quick defaults
@@ -413,10 +449,11 @@ function varargout = gnumex(varargin)
     pstruct = struct(...
       'cygwinpath',cygwinpath,...
       'mingwpath' ,mingwpath,...
+      'gfortpath' ,gfortpath,...
       'gnumexpath',findmfile('gnumex'),...
       'mingwf'    ,mingwf,...
       'mexf'      ,1,...
-      'lang'      ,1,...
+      'lang'      ,1,... %(1=c/c++, 2=f77, 3=f95)
       'safef'     ,safef,...
       'cpu'       ,1,...
       'precompath',pwd,...
@@ -542,10 +579,22 @@ function varargout = gnumex(varargin)
     end
     pstruct = varargin{2};
 
-    % check only path for selected compile type
-    if pstruct.mingwf == 1 | pstruct.mingwf == 3
-      outvs = fdwarn(fullfile(pstruct.mingwpath, 'bin'), 'gcc.exe');
-    else
+    if pstruct.lang == 3 & ismember(pstruct.mingwf, [2,3])
+      outvs = {0,'Cygwin cannot be used with Fortran 95'};
+    elseif pstruct.mingwf ~= 2
+      % check only path for selected compile type
+      switch pstruct.lang
+        case {1,2}
+          outvs = fdwarn(fullfile(pstruct.mingwpath, 'bin'), 'gcc.exe');
+        case 3
+          switch pstruct.mingwf
+            case 1
+              outvs = fdwarn(fullfile(pstruct.mingwpath, 'bin'), 'g95.exe');
+            case 4
+              outvs = fdwarn(fullfile(pstruct.gfortpath, 'bin'), 'gfortran.exe');
+          end
+      end  
+    else % cygwin
       cgwbin = fullfile(pstruct.cygwinpath, 'bin');
       outvs = fdwarn(cgwbin, 'gcc.exe');
       if outvs{1}
@@ -568,7 +617,7 @@ function varargout = gnumex(varargin)
     % This checks if cygwin1.dll is on the Windows path
     pstruct = varargin{2};
     varargout = {1, ''};
-    if pstruct.mingwf ~= 1
+    if ismember(pstruct.mingwf, [2, 3])
       whichcmd = fullfile(pstruct.cygwinpath, 'bin', 'which.exe');
       lscmd = fullfile(pstruct.cygwinpath, 'bin', 'ls.exe');
       [err,reslt] = dos([whichcmd ' cygwin1.dll']);
@@ -690,11 +739,9 @@ function varargout = gnumex(varargin)
       fmexdefs = {'df50mex.def'};
       fengdefs = {'dfmx.def', 'dfmat.def', 'dfeng.def'};
     elseif mlv < 7 % matlab 6
-      mexdefs = {'libmx.def', 'libmex.def',...
-        'libmat.def', '_libmatlbmx.def'};
+      mexdefs = {'libmx.def', 'libmex.def', 'libmat.def', '_libmatlbmx.def'};
       engdefs = {'libmx.def', 'libeng.def', 'libmat.def'};
-      fmexdefs = {'libmx.def', 'libmex.def',...
-        'libmat.def', '_libmatlbmx.def'};
+      fmexdefs = {'libmx.def', 'libmex.def', 'libmat.def', '_libmatlbmx.def'};
       fengdefs = {'libmx.def', 'libeng.def', 'libmat.def'};
     else % matlab 7
       mexdefs =  {'libmx.def', 'libmex.def', 'libmat.def'};
@@ -730,7 +777,6 @@ function varargout = gnumex(varargin)
         else
           disp('Making .def-files ...');
         end
-        %gnumex('makedeffiles', nm, deffiles, path_to_deffiles);
         gnumex('makedeffiles', nm, deffiles);
         if gui_f, set(gcf, 'Pointer', 'arrow'); end
       end
@@ -745,25 +791,24 @@ function varargout = gnumex(varargin)
       '-march=pentium4 -mfpmath=sse'};
 
     % get the relevant path
-    if pps.mingwf == 1
-      gccpath = pps.mingwpath;
-    else
-      gccpath = pps.cygwinpath;
+    switch pps.mingwf
+      case 1,    compiler_path = pps.mingwpath;
+      case 4,    compiler_path = pps.gfortpath;
+      otherwise, compiler_path = pps.cygwinpath;
     end
-    gccpath = fullfile(gccpath, 'bin');
+    compiler_path = fullfile(compiler_path, 'bin');
 
     % dlltool command needs to be custom thing for
     % Fortran linking
-    if pps.lang == 2
-      dllcmd = [pps.gnumexpath '\mexdlltool -E --as ' ...
-        gccpath '\as.exe'];
-    else
+    if pps.lang == 1
       dllcmd = 'dlltool';
+    else
+      dllcmd = [pps.gnumexpath '\mexdlltool -E --as ' compiler_path '\as.exe'];
     end
 
     % check that the right one of mingw/cygwin has been selected
-    cpf = exist(fullfile(gccpath,'cygpath.exe'),'file');
-    if pps.mingwf == 1 & cpf
+    cpf = exist(fullfile(compiler_path,'cygpath.exe'),'file');
+    if pps.mingwf == 1 & cpf & pps.lang < 3
       if strcmp('Cancel',...
           questdlg(...
           {'cygpath in binary directory',...
@@ -772,7 +817,7 @@ function varargout = gnumex(varargin)
           'Mingw/Cygwin mismatch','Continue','Cancel','Cancel'))
         return
       end
-    elseif pps.mingwf > 1 & ~cpf
+    elseif ismember(pps.mingwf,[2,3]) & ~cpf
       warndlg('For Cygwin or Cygwin/mingw, need cygpath in binary directory',...
         'Gnumex argument check failed');
       return
@@ -792,7 +837,7 @@ function varargout = gnumex(varargin)
       if pps.lang == 1  % c/c++
         defs2link = mexdefs;
         librootn = 'mexlib';
-      else % fortran
+      else % fortran 77 or 95
         defs2link = fmexdefs;
         librootn = 'fmexlib';
       end
@@ -800,7 +845,7 @@ function varargout = gnumex(varargin)
       if pps.lang == 1  % c/c++
         defs2link = engdefs;
         librootn = 'englib';
-      else % fortran
+      else % fortran 77 or 95
         defs2link = fengdefs;
         librootn = 'fenglib';
       end
@@ -850,7 +895,7 @@ function varargout = gnumex(varargin)
         if ~exist(pps.precompath, 'dir')
           fp(['mkdir "' pps.precompath '"']);
         end
-        fp(['set PATH=' gccpath]);
+        fp(['set PATH=' compiler_path]);
         % if specified directory does not exist, we will try to create it
         % else, if flag file present, delete it
         if exist(defoutfils{1}, 'file')
@@ -890,7 +935,7 @@ function varargout = gnumex(varargin)
     % but I don't know if this is compatible with versions of matlab
     % < 5.3
     add_libs = {};
-    if (pps.lang == 2) % fortran
+    if (pps.lang >= 2) % fortran
       add_libs = {add_libs{:} '-lg2c'};
     end
 
@@ -928,7 +973,7 @@ function varargout = gnumex(varargin)
     fp(['set MATLAB=' mlr]);
     fp(['set GM_PERLPATH=' perlpath]);
     fp(['set GM_UTIL_PATH=' pps.gnumexpath]);
-    fp(['set PATH=' gccpath ';%PATH%']);
+    fp(['set PATH=' compiler_path ';%PATH%']);
     fp('rem');
     if (pps.safef == 2)
       fp('rem precompiled library directory');
@@ -945,7 +990,11 @@ function varargout = gnumex(varargin)
     fp(['set GM_MEXTYPE=' mtype]);
     fp('rem');
     fp('rem Language for compilation');
-    if pps.lang == 1, mlang = 'c'; else mlang = 'f';end
+    switch pps.lang
+      case 1, mlang = 'c';
+      case 2, mlang = 'f77';
+      case 3, mlang = 'f95';
+    end
     fp(['set GM_MEXLANG=' mlang]);
     fp('rem');
     fp('rem def files to be converted to libs');
@@ -957,7 +1006,11 @@ function varargout = gnumex(varargin)
     fp('rem compiler options; add compiler flags to compflags as desired');
     fp('set NAME_OBJECT=-o');
     if mlv > 5.1
-      fp(['set COMPILER=gcc']);
+      if     pps.lang <= 2, fp(['set COMPILER=gcc']);
+      elseif pps.lang == 3 && pps.mingwf == 1, fp(['set COMPILER=g95']);
+      elseif pps.lang == 3 && pps.mingwf == 4, fp(['set COMPILER=gfortran']);
+      else error 'Illegal pps.lang'
+      end
     else
       fp('rem Need wrapper for compiler to move .o output to .obj');
       fp(['set COMPILER=mexgcc']);
@@ -968,9 +1021,10 @@ function varargout = gnumex(varargin)
     else
       c = '';
     end
-    if pps.lang == 2 % fortran
+    if pps.lang >= 2 % fortran
       % stdcall compile, upper case symbols, no underscore suffix
-      c = ['-fcase-upper -fno-underscoring ' c];
+      c = ['-fno-underscoring ' c];
+      if pps.mingwf < 4, c = ['-fcase-upper ' c]; end
     end
     fp(['set COMPFLAGS=-c -DMATLAB_MEX_FILE ' c]);
     fp(['set OPTIMFLAGS=-O3 -malign-double -fno-exceptions -funroll-all-loops ' optimflags{pps.cpu}]);
@@ -997,7 +1051,7 @@ function varargout = gnumex(varargin)
     end
 
     % resource linker parameters
-    if (pps.mingwf == 1)    % mingw compile
+    if (pps.mingwf == 1 | pps.mingwf == 4) % mingw or gfortran compile
       rclinkfs = '';
     else                  % cygwin or cygwin/mingw compile
       rclinkfs = '--unix';
@@ -1045,11 +1099,13 @@ function varargout = gnumex(varargin)
 
     switch pstruct.mingwf
       case 1
-        lnk = 'Mingw';
+        lnk = 'MinGW';
       case 2
         lnk = 'Cygwin (cygwin*.dll)';
       case 3
-        lnk = 'Cygwin / mingw (-mno-cygwin)';
+        lnk = 'Cygwin / MinGW (-mno-cygwin)';
+      case 4
+        lnk = 'gfortran';
     end
     switch pstruct.mexf
       case 1
@@ -1067,7 +1123,9 @@ function varargout = gnumex(varargin)
       case 1
         lang = 'C / C++';
       case 2
-        lang = 'Fortran';
+        lang = 'Fortran 77';
+      case 3
+        lang = 'Fortran 95';
     end
     switch pstruct.cpu
       case 1
@@ -1147,7 +1205,7 @@ function varargout = gnumex(varargin)
 
     % test each in turn
     success = cell(3,2,2,2);
-    for ctype = 1:3  % mingw, cygwin, mno-cygwin
+    for ctype = 1:4  % mingw, cygwin, mno-cygwin
       pstruct.mingwf = ctype;
       if ~isempty(cygwin_old_path) & ctype == 2
         pstruct.cygwinpath = cygwin_old_path; 
@@ -1213,6 +1271,7 @@ function varargout = gnumex(varargin)
     path_opts = {...
       'cygwinpath',...
       'mingwpath',...
+      'gfortpath',...
       'gnumexpath',...
       'precompath',...
       'optfile',...
@@ -1221,10 +1280,12 @@ function varargout = gnumex(varargin)
       'mingw',     'mingwf',     1;...
       'cygwin',    'mingwf',     2;...
       'no-cygwin', 'mingwf',     3;...
+      'gfortran',  'mingwf',     4;...
       'mex',       'mexf',       1;...
       'eng',       'mexf',       2;...
       'c',         'lang',       1;...
-      'fortran',   'lang',       2;...
+      'fortran77', 'lang',       2;...
+      'fortran95', 'lang',       3;...
       'safe',      'safef',      1;...
       'quick',     'safef',      2;...
       'p1',        'cpu',        1;...
@@ -1345,13 +1406,18 @@ function tf = mingw_before_cygwin(cygwinpath)
     end
   end
 
-function [cygwinpath, mingwpath] = find_paths();
+function [cygwinpath, mingwpath, gfortpath] = find_paths();
   % Try to find locations of cygwin and mingw
   % Mark Levedahl suggested this to find Cygwin
   reg_cygwin = 'SOFTWARE\Cygnus Solutions\Cygwin\mounts v2\/';
   reg_mingw = 'Software\Microsoft\Windows\CurrentVersion\Uninstall\MinGW';
   cygwinpath = find_path(reg_cygwin, 'native', 'c:\cygwin');
   mingwpath = find_path(reg_mingw', 'InstallLocation', 'c:\mingw');
+  gfortpath = locate('gfortran.exe');
+  if ~isempty(gfortpath)
+    [pa,fn,ex] = fileparts(gfortpath);
+    if isequal(fn,'bin') & isempty(ex), gfortpath = pa; end
+  end
   
 function folder = find_path(subkey, valname, default)
   % Try to find folder of cygwin / mingw in the registry, else use default
@@ -1380,3 +1446,15 @@ for pi = 1:length(paths)
 end
 return
   
+function loc = locate(f)  % "which" (look for dos command in path) -- return folder
+  [pathstr,name,ext] = fileparts(f);
+  if isempty(ext) | isequal(ext,'.'), ext = '.exe'; end
+  f = [name ext];
+  path = getenv('path');
+  while ~isempty(path)
+    [folder, path]=strtok(path,';');
+    fullf = fullfile(folder, f);
+    d = dir(fullf);
+    if ~isempty(d) & ~d(1).isdir(), loc = folder; return, end
+  end
+  loc = '';
