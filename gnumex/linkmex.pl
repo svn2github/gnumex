@@ -13,19 +13,21 @@ $lang     = $ENV{'GM_MEXLANG'};   # c or Fortran
 $gmpath   = $ENV{'GM_UTIL_PATH'}; # gnumex path
 $dllcmd   = $ENV{'GM_DLLTOOL'};   # dlltool command
 $addlibs  = $ENV{'GM_ADD_LIBS'};  # added libraries
+$mexdef   = $ENV{'GM_MEXDEF'};    # mex.def or fmex.def
+$libpath  = $ENV{'GM_QLIB_NAME'}; # location of libraries and mex.def
+$defpath  = $ENV{'GM_DEF_PATH'};  # location of other .def files
 $compiler = $ENV{'COMPILER'};     # gcc, g95 or gfortran
 
-
 # Use precompiled files or create libraries if needed
-@libs = ($ENV{GM_DEFS2LINK} =~ /([\w\.]+);/g);
+@libs = ($ENV{GM_DEFS2LINK} =~ /([\w\.]+);/g);  # Matches xxx.xxx;yyy.yyy; and returns 
+                                                # @libs as a vector with xxx.xxx and yyy.yyy
 if ($ENV{'GM_QLIB_NAME'} ne "") {
   if ($lang eq 'f' || $lang eq 'f77' | $lang eq 'f95' ) { $libroot = 'f' . $mtype }
   else { $libroot = $mtype } ;
-  $libname = $ENV{'GM_QLIB_NAME'}. "\\${libroot}lib";
+  $libname = $libpath . "\\${libroot}lib";
 } else {
   # doh! We'll have to create them
   $libname = $ENV{'LIB_NAME'};
-  $defpath = $ENV{'GM_DEF_PATH'};
   $libno = 1;
   foreach $lib(@libs) {
     $cmd = "$dllcmd --def $defpath\\$lib --output-lib \"${libname}${libno}.lib\"";
@@ -72,17 +74,17 @@ if ($lang eq 'c') {
 } 
 
 if ($mtype eq 'mex') {
-  # Create .def file for our MEX file
-  $fn = "mex.def";
-  unlink $fn;
-  unless (open (FN,">$fn")) {die "Can't open $fn $!";}
-  if ($lang eq 'c') {
-    printf FN "EXPORTS\nmexFunction\n";
-  } else {
-    printf FN "EXPORTS\n";
-    printf FN "_MEXFUNCTION\@16=MEXFUNCTION\n";
-  }
-  close FN;
+#  # Create .def file for our MEX file
+#  $fn = "mex.def";
+#  unlink $fn;
+#  unless (open (FN,">$fn")) {die "Can't open $fn $!";}
+#  if ($lang eq 'c') {
+#    printf FN "EXPORTS\nmexFunction\n";
+#  } else {
+#    printf FN "EXPORTS\n";
+#    printf FN "_MEXFUNCTION\@16=MEXFUNCTION\n";
+#  }
+#  close FN;
   
   # Create fixup.o which may be needed (certainly W95, possibly W98) to
   # terminate the import list
@@ -97,7 +99,8 @@ if ($mtype eq 'mex') {
   # print $message unless ($message eq "");
   
   # command to make mex dll
-  $cmd = join(" ", $linker, 'mex.def', $arglist, $addlibs, @libnames);
+  $fullmexdef = $libpath . "\\" . $mexdef;
+  $cmd = join(" ", $linker, $fullmexdef, $arglist, $addlibs, @libnames);
   # $cmd = join(" ", $linker, 'mex.def', $arglist, 'fixup.o', $addlibs, @libnames);
 } else { # engine file
   $cmd = join(" ", $linker,$arglist, @libnames, 
@@ -105,7 +108,7 @@ if ($mtype eq 'mex') {
 }
 
 # print command (will only be printed if -v switch is given with mex):
-print $cmd . "\n";
+print $cmd . "\n\n";
 
 # execute via backticks (system doesn't work on W9x)
 $message = `$cmd`;
