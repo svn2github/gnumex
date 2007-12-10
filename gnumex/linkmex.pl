@@ -1,5 +1,8 @@
 # '--*-Perl-*--';
 # linkmex.pl
+# part of gnumex (version 2)
+# original authors Matthew Brett and Tom Van Overbeek
+# last changed by Kristjan Jonasson (jonasson@hi.is) Dec. 2007
 #
 # perl script to link mex file dll / engine file exe
 # create library files if not using precompiled libraries
@@ -8,43 +11,18 @@
 # delete temporary files
 
 
-$mtype    = $ENV{'GM_MEXTYPE'};   # mex or engine
-$lang     = $ENV{'GM_MEXLANG'};   # c or Fortran
-$gmpath   = $ENV{'GM_UTIL_PATH'}; # gnumex path
-$dllcmd   = $ENV{'GM_DLLTOOL'};   # dlltool command
-$addlibs  = $ENV{'GM_ADD_LIBS'};  # added libraries
-$mexdef   = $ENV{'GM_MEXDEF'};    # mex.def or fmex.def
-$libpath  = $ENV{'GM_QLIB_NAME'}; # location of libraries and mex.def
-$defpath  = $ENV{'GM_DEF_PATH'};  # location of other .def files
-$compiler = $ENV{'COMPILER'};     # gcc, g95 or gfortran
-
-# Use precompiled files or create libraries if needed
-@libs = ($ENV{GM_DEFS2LINK} =~ /([\w\.]+);/g);  # Matches xxx.xxx;yyy.yyy; and returns 
-                                                # @libs as a vector with xxx.xxx and yyy.yyy
-if ($ENV{'GM_QLIB_NAME'} ne "") {
-  if ($lang eq 'f' || $lang eq 'f77' | $lang eq 'f95' ) { $libroot = 'f' . $mtype }
-  else { $libroot = $mtype } ;
-  $libname = $libpath . "\\${libroot}lib";
-} else {
-  # doh! We'll have to create them
-  $libname = $ENV{'LIB_NAME'};
-  $libno = 1;
-  foreach $lib(@libs) {
-    $cmd = "$dllcmd --def $defpath\\$lib --output-lib \"${libname}${libno}.lib\"";
-    $message = `$cmd`;
-    print $message unless ($message eq "");
-    $libno += 1;
-  }
-}
-for $libno(1..$#libs+1) {
-  $libnames[$libno] = "\"${libname}${libno}.lib\"";
-}
-
-# collect correct linker
-$arglist = join(" ", @ARGV);
+$mtype      = $ENV{'GM_MEXTYPE'};   # mex or engine
+$lang       = $ENV{'GM_MEXLANG'};   # c or Fortran
+$dllcmd     = $ENV{'GM_DLLTOOL'};   # dlltool command
+$addlibs    = $ENV{'GM_ADD_LIBS'};  # added libraries
+$mexdef     = $ENV{'GM_MEXDEF'};    # mex.def or fmex.def
+$libpath    = $ENV{'GM_QLIB_NAME'}; # location of libraries and mex.def
+$defpath    = $ENV{'GM_DEF_PATH'};  # location of other .def files
+$compiler   = $ENV{'COMPILER'};     # gcc, g77, g95 or gfortran
+$arglist    = join(" ", @ARGV);     # files to link
 
 if ($lang eq 'c') {
-  # meed g++ if this is c++
+  # need g++ if this is c++
   # unfortunately you cannot directly set a different linker
   # for c++ from the options file, so we'll use the GM_ISCPP
   # word passed to the linker as an indicator
@@ -73,47 +51,15 @@ if ($lang eq 'c') {
   }
 } 
 
-if ($mtype eq 'mex') {
-#  # Create .def file for our MEX file
-#  $fn = "mex.def";
-#  unlink $fn;
-#  unless (open (FN,">$fn")) {die "Can't open $fn $!";}
-#  if ($lang eq 'c') {
-#    printf FN "EXPORTS\nmexFunction\n";
-#  } else {
-#    printf FN "EXPORTS\n";
-#    printf FN "_MEXFUNCTION\@16=MEXFUNCTION\n";
-#  }
-#  close FN;
-  
-  # Create fixup.o which may be needed (certainly W95, possibly W98) to
-  # terminate the import list
-  # $fn = "fixup.c";
-  # unlink $fn;
-  # unless (open (FN,">$fn")) {die "Can't open $fn $!";}
-  # printf FN "asm(\".section .idata\$3\");\n";
-  # printf FN "asm(\".long 0,0,0,0, 0,0,0,0\");\n";
-  # close FN;
-  # $cmd = "gcc -c -o fixup.o fixup.c";
-  # $message = `$cmd`;
-  # print $message unless ($message eq "");
-  
-  # command to make mex dll
-  $fullmexdef = $libpath . "\\" . $mexdef;
-  $cmd = join(" ", $linker, $fullmexdef, $arglist, $addlibs, @libnames);
-  # $cmd = join(" ", $linker, 'mex.def', $arglist, 'fixup.o', $addlibs, @libnames);
+if ($mtype eq 'mex') { # command to make mex dll
+  $cmd = join(" ", $linker, $mexdef, $arglist, $addlibs);
 } else { # engine file
-  $cmd = join(" ", $linker,$arglist, @libnames, 
-	      '-lkernel32','-luser32','-lgdi32',$addlibs,'-mwindows');
+  $cmd = join(" ", $linker, $arglist, '-lkernel32','-luser32','-lgdi32',$addlibs,'-mwindows');
 }
 
 # print command (will only be printed if -v switch is given with mex):
-print $cmd . "\n\n";
-
+print "INFORMATION FROM LINKMEX.PL:\n";
+print "windows path  = " . $ENV{'PATH'} . "\n";
+print "link command  = " . $cmd . "\n";
 # execute via backticks (system doesn't work on W9x)
 $message = `$cmd`;
-
-#if ($mtype eq 'mex') {
-# Cleanup
-#  unlink "mex.def", "fixup.c", "fixup.o";
-#}
