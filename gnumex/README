@@ -90,6 +90,8 @@ ACCOMPANYING DOCUMENTATION AND EXAMPLE FILES:
    yprime77.f          A Fortran 77 example gateway routine
    yprimef.f           A Fortran 77 example computational routine for yprime77
    yprime95.f90        A Fortran 95 example program (gateway and module)
+   mexinterface.f90    Interface to mex functions for g95
+   mexinterface_c.f90  Interface to mex functions for gfortran
    powerit.f90         Another Fortran 95 example, demonstrating more features
    fengdemo.f          Example Fortran engine program
    changes.txt         Lists changes after Gnumex version 1.11

@@ -19,8 +19,12 @@ $mexdef     = $ENV{'GM_MEXDEF'};    # mex.def or fmex.def
 $libpath    = $ENV{'GM_QLIB_NAME'}; # location of libraries and mex.def
 $defpath    = $ENV{'GM_DEF_PATH'};  # location of other .def files
 $compiler   = $ENV{'COMPILER'};     # gcc, g77, g95 or gfortran
-$arglist    = join(" ", @ARGV);     # files to link
 
+foreach (@ARGV) {
+  $i=index($_," ");
+  if ($i >= 0) { $_ = '"' . $_ . '"'; }
+}
+$arglist = join(" ", @ARGV); # -o xxx.mexw32 -s file1.obj file2.obj...
 if ($lang eq 'c') {
   # need g++ if this is c++
   # unfortunately you cannot directly set a different linker
@@ -58,8 +62,8 @@ if ($mtype eq 'mex') { # command to make mex dll
 }
 
 # print command (will only be printed if -v switch is given with mex):
-print "INFORMATION FROM LINKMEX.PL:\n";
-print "windows path  = " . $ENV{'PATH'} . "\n";
-print "link command  = " . $cmd . "\n";
+#print "INFORMATION FROM LINKMEX.PL:\n";
+#print "windows path  = " . $ENV{'PATH'} . "\n";
+print "link command: " . $cmd . "\n";
 # execute via backticks (system doesn't work on W9x)
 $message = `$cmd`;

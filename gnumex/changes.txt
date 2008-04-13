@@ -108,4 +108,7 @@ CHANGES BETWEEEN VERSION 1.13 AND 2.0
 9. The example programs have been moved to a separate directory, "examples"
    under the Gnumex install directory.
 
+10. Corrected a bug in linkmex.pl. Linking would fail if the TEMP environment
+    variable contained spaces (unless compiling was done separately).
+
 Kristjan Jonasson (jonasson@hi.is)

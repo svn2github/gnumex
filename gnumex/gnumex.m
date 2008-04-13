@@ -15,12 +15,12 @@ function varargout = gnumex(varargin)
   % (at your option) any later version.
 
   % current version number
-  VERSION = '1.13a';
+  VERSION = '2.00';
   [MING CYMN CYGW] = deal(1,2,3);
   [C, F77, G95, GFORTRAN] = deal(1,2,3,4);
   mlv = sscanf(version,'%f',1); % MATLAB VERSION
   if mlv < 5
-    error('gnumex will not work for versions before 5.0');
+    error('gnumex will not work for Matlab versions before 5.0');
   end
 
   if nargin < 1
@@ -1332,7 +1332,9 @@ function varargout = gnumex(varargin)
         optflg = '-O3 -mtune=native';
     end
 
-    varargout = {{[lnk ' linking'],...
+    varargout = {{...
+      ['Gnumex, version ' VERSION],...
+      [lnk ' linking'],...
       [mext ' creation'],...
       libcre,...
       ['Language: ' lang],...
@@ -1452,7 +1454,8 @@ function varargout = gnumex(varargin)
   elseif (strcmp(action, 'usage'))
 
     [path_opts cmd_opts] = gnumex('command_options');
-    fprintf('gnumex command line options:\n');
+    fprintf(['Gnumex, version ' VERSION '. '])
+    fprintf('Command line options:\n');
     fprintf('%s=[path]\n', path_opts{:});
     fprintf('%s\n', cmd_opts{:, 1});
     fprintf('%s\n', 'usage');
