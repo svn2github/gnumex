@@ -1367,17 +1367,17 @@ function varargout = gnumex(varargin)
     flagfile = 'checked.mat';
 
     % path to file examples
-    fortran_mexfun = 'yprime_g77';
+    fortran_mexfun = 'yprime77';
     exroot = fullfile(matlabroot, 'extern', 'examples');
     fexpath = findmfile('gnumex');
-    fortran_examples = {fullfile(fexpath, [fortran_mexfun '.f']) ...
-      ,                 fullfile(fexpath, 'yprimef.f')};
+    fortran_examples = {fullfile(fexpath, 'examples', [fortran_mexfun '.f']) ...
+      ,                 fullfile(fexpath, 'examples', 'yprimef.f')};
     % file examples
-    % 4x4 cell matrix, col 1 mex, col 2 eng, row 1 c row 2 fortran
+    % 2x2 cell matrix, col 1 mex, col 2 eng, row 1 c row 2 fortran
     mexstr{1,1} = {fullfile(exroot, 'mex', 'yprime.c')};
     mexstr{2,1} = fortran_examples;
     mexstr{1,2} = {fullfile(exroot, 'eng_mat', 'engwindemo.c')};
-    mexstr{2,2} = {fullfile(fexpath, 'fengdemo.f')};
+    mexstr{2,2} = {fullfile(fexpath, 'examples', 'fengdemo.f')};
 
     % c and fortran versions of evals to test (testf = 1)
     mexteststr = {'yprime(1, 1:4)', [fortran_mexfun '(1, 1:4)']};
@@ -1399,12 +1399,12 @@ function varargout = gnumex(varargin)
 
     % test each in turn
     success = cell(3,2,2,2);
-    for ctype = [MING,CYMN,CYGW]
+    if isempty(cygwin_old_path), CTYPES = [MING,CYMN];
+    else                         CTYPES = [MING,CYMN,CYGW]; end
+    for ctype = CTYPES
       pstruct.environ = ctype;
       if ~isempty(cygwin_old_path) & ctype == 2
         pstruct.cygwinpath = cygwin_old_path; 
-      else
-        pstruct.cygwinpath = cygwinpath;
       end
       for lang = 1:2  % c, fortran77
         pstruct.lang = lang;

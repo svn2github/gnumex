@@ -3,7 +3,7 @@ SUMMARY OF GNUMEX USAGE
 For more information see the detailed guidelines in [1]. They were written in
 2004, but are still (2007) pretty much up-to-date. Gnumex enables mex files
 for C, C++ and Fortran to be created with gcc, and subsequently called from
-Matlab. For Fortran use see theaccompanying file, readme-fortran.txt. The
+Matlab. For Fortran use see the accompanying file, readme-fortran.txt. The
 following steps are involved:
 
 CHOOSE EITHER MINGW OR CYGWIN as the gcc environment. It is recommended that
@@ -37,14 +37,18 @@ CHOOSE EITHER MINGW OR CYGWIN as the gcc environment. It is recommended that
 
 NOW RUN GNUMEX. Cd to the folder where Gnumex is installed and type "gnumex"
    at the Matlab prompt. This brings up a GUI-window. Make apropriate choices
-   (see [1]) and select "Make opts". 
+   (see [1]) and select "Make opts".
+
+   If easy switching between compilers (or other Gnumex options) is desired
+   it may be easier to add the Gnumex folder to the Matlab search path and
+   use Gnumex in batch mode. Issue "gnumex usage" for a quick help.
 
    This will ceate libraries of mex-, mx- and mat-functions ready to be called
    from C or Fortran programs (in Matlab 7.4 and later a preliminary step is
    the creation of .def-files in the Gnumex folder). Gnumex will also create a
    configuration file for the Matlab mex-command, called "options.bat" by
    default. The configuration file sets gcc to be the compiler, and a
-   perl-script, linkmex.pl, that is part of gnumex to be the linker. It also
+   perl-script, linkmex.pl, that is part of Gnumex to be the linker. It also
    points to the libraries, and sets appropriate options for the compilation
    and linking.
 
@@ -76,7 +80,7 @@ TO CREATE MEX-FILES use the Matlab mex command. It will by default look for a
 EXAMPLE C MEXING
    To try out mex-file creation copy the file yprime.c from the Matlab examples
    folder to the current folder, compile it with mex and call yprime. After
-   running gnumex (for C) you can issue from the Matlab prompt:
+   running Gnumex (for C) you can issue from the Matlab prompt:
        >> copyfile([matlabroot '\extern\examples\mex\yprime.c'])
        >> mex yprime.c
        >> yprime(1, 1:4)

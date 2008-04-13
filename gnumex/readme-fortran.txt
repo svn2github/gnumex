@@ -1,16 +1,16 @@
 SOME COMMENTS ON FORTRAN MEX FILES
 
 INTRODUCTION
-  This document extends the information in the accompanying file
-  README. Gnumex version 2.0 supports both Fortran 77 (with the g77 compiler)
-  and Fortran 90/95 (with either the g95 or gfortran compiler). The following
-  guidelines may help clear things regarding Fortran programs.
+  This document extends the information in the accompanying file README. Gnumex
+  version 2.0 supports both Fortran 77 (with the g77 compiler) and Fortran 90/95
+  (with either the g95 or gfortran compiler). The following guidelines may help
+  clear things regarding Fortran programs.
 
 FORTRAN FILE EXTENSIONS
   Fortran 77 programs and Fortran 90/95 programs in fixed source form should
-  have extension .f, but free form Fortran 95 programs must have extension .f90
+  have extension .f, but free form Fortran 95 programs must have extension .f90 
   (the compilers support also the extension .f95, but Matlab's mex command does
-  not, and .f90 is preferred over .f95 anyway).
+  not, and .f90 is generally preferred over .f95 anyway).
 
 CASE OPTIONS AND TRAILING UNDERSCORES
   With g77 and g95 Gnumex uses the compile switches -fcase-upper and
@@ -34,6 +34,18 @@ CASE OPTIONS AND TRAILING UNDERSCORES
   one can use BIND(C,NAME...) clauses in interface blocks for the mx and mex
   functions, e.g. BIND(C,NAME='MXGETPR') (the mx and mex functions are probably
   written in C anyway). The demonstration programs give more details.
+
+MEX FUNCTIONS WITH CHARACTER STRING ARGUMENTS
+  The Fortran functions mexErrMsgTxt and mexPrintf (really MEXERRMSGTXT and
+  MEXPRINTF), that both have a single character argument, seem to work fine with
+  both g77 and g95 (with the interface in mexinterface.f90 discussed below).
+  However, gfortran seems to have a different mechanism for passing character
+  strings, and the Fortran versions of these functions do not work. Thus
+  mexinterface_c.f90 binds them to the corresponding C-functions (with mixed
+  case names). This meens that strings passed to them from gfortran must have
+  an ascii zero appended, viz:
+       call mexprintf('A message'//char(0))
+       call mexerrmsgtxt('An error occurred'//char(10)//char(0))
 
 POINTERS AND %VAL
   Matlab sends integer memory addresses (pointers) to the gateway routine and
@@ -63,36 +75,50 @@ DEMONSTRATION PROGRAMS
   incompatible with all the gnu Fotran compilers. However with Gnumex there are
   routines, yprime77.f and yprime95.f90 which are compatible. The first one
   calls the computational routine in yprimef.f, but the second contains a module
-  with a computational routine that is called (the yprimef.f that comes with 
-  Matlab is actually g77-compatible, but for convenience a similar routine is
-  enclosed with Gnumex). The Fortran 90 demo programs include two modules,
-  mexinterface_c.f90 and mexinterface.f90. The second one is simpler but does
-  not work with gfortran (because of the -fcase issue discussed above), but the
-  second one works for both compilers.
+  which with a computational routine that is called (the yprimef.f that comes
+  with Matlab is actually g77-compatible, but for convenience a similar routine
+  is enclosed with Gnumex). The demonstartion programs are located in a
+  subfolder, examples, in the folder where Gnumex is installed.
+
+  For Fortran 90 there is an additional demonstration program, powerit.f90,
+  which carries out power iteration (to find dominant eigenvalue) with a sparse
+  matrix. The Fortran 90 demo programs include two modules, mexinterface_c.f90
+  and mexinterface.f90. The second one is simpler but does not work with
+  gfortran (because of the -fcase issue discussed above), but the second one
+  works for both compilers. These modules define the interface to those mx-
+  and mex-functions which are used by the demo programs, and if other functiions
+  are needed their interface must be added here.
 
 RUNNING THE DEMOS
   To try out Fortran mexing use Gnumex to create an options.bat file for
   Fortran, compile with mex and call yprime77 or yprime95. From the Matlab
   prompt one can for instance issue:
-
       >> gnumex fortran77
       >> mex yprime77.f yprimef.f
       >> yprime77(1, 1:4)
   or:
       >> gnumex g95
       >> mex -c mexinterface.f90
-      >> mex yprime95.f90 mexinterface.obj
+      >> mex yprime95.f90
       >> yprime95(1, 1:4)
   or:
       >> gnumex gfortran
       >> mex -c mexinterface_c.f90
-      >> mex yprime95.f90 mexinterface_c.obj
+      >> mex yprime95.f90
       >> yprime95(1, 1:4)
-
-  and should in each case receive the answer: 2.0000  8.9685  4.0000  -1.0947.
+  and should in each case receive the answer: 2.0000  8.9685  4.0000  -1.0947
+  (here it has been assumed that the Gnumex folder is on Matlab's search path).
   The compilations of the mexinterface files must come before compiling yprime95
   so that the module files (.mod) are created timely. With g95 either 
   mexinterface module may be used.
+
+  To try powerit, issue:
+      >> mex powerit.f90 mexinterface_c.obj  [or mexinterface.obj for g95]
+      >> n = 1024
+      >> a = gallery('neumann', n);
+      >> x = [1; zeros(n-1,1)];
+      >> powerit(a,x,1000)
+  The answer 7.9972 should be received.
 
 VERSIONS OF THE COMPILERS
   Gnumex 2.0 is tested with the following versions of the compilers:
@@ -109,3 +135,5 @@ VERSIONS OF THE COMPILERS
 
   CYGWIN-3.2
   g77: 3.2 (ptolemy.eecs.berkeley.edu/ptolemyII/ptII4.0/cygwin.htm)
+
+(KJ, April. 2008)
