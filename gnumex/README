@@ -26,7 +26,7 @@ CHOOSE EITHER MINGW OR CYGWIN as the gcc environment. It is recommended that
    http://ptolemy.eecs.berkeley.edu/ptolemyII/ptII4.0/cygwin.htm, download
    cygwinDevel.exe (35.4Mb) and follow the instruction on the web page.
 
-   TO INSTALL G95
+   TO INSTALL G95:
    Visit g95.org, download and run one of the "Self-extracting Windows x86"
    files. Choose to install in the MinGW folder and directory structure (usually
    c:\mingw --- gnumex assumes that g95 is in the bin directory of MinGW).
@@ -77,10 +77,9 @@ TO CREATE MEX-FILES use the Matlab mex command. It will by default look for a
    creates files with extension .obj -- .obj files are valid inputs for
    subsequent mex-commands.
 
-EXAMPLE C MEXING
-   To try out mex-file creation copy the file yprime.c from the Matlab examples
-   folder to the current folder, compile it with mex and call yprime. After
-   running Gnumex (for C) you can issue from the Matlab prompt:
+EXAMPLE C MEXING: To try out mex-file creation copy the file yprime.c from the
+   Matlab examples folder to the current folder, compile it with mex and call
+   yprime. After running Gnumex (for C) you can issue from the Matlab prompt:
        >> copyfile([matlabroot '\extern\examples\mex\yprime.c'])
        >> mex yprime.c
        >> yprime(1, 1:4)
@@ -88,12 +87,16 @@ EXAMPLE C MEXING
 
 ACCOMPANYING DOCUMENTATION AND EXAMPLE FILES:
    readme-fortran.txt  More details on Fortran mexing
-   yprime77.f          A g77 compatible example Fortran gateway routine
-   yprime95.f90        A g95 compatible example Fortran gateway routine
-   yprimef.f           An example computational routine for yprime_g77
+   yprime77.f          A Fortran 77 example gateway routine
+   yprimef.f           A Fortran 77 example computational routine for yprime77
+   yprime95.f90        A Fortran 95 example program (gateway and module)
+   powerit.f90         Another Fortran 95 example, demonstrating more features
    fengdemo.f          Example Fortran engine program
    changes.txt         Lists changes after Gnumex version 1.11
    README              This file
+
+NEXT STEPS: The author is working on support for new compilers (including the
+   Nag and the Intel Fortran 95 compilers).
 
 REFERENCES
    [1] http://gnumex.sourceforge.net
