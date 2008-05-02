@@ -16,7 +16,7 @@ CHANGES TO GNUMEX BETWEEN VERSIONS 1.11 AND 1.12.
 
 4. The -mrtd flag has been removed for Fortran compilation (KJ had a nasty
    crash with a Fortran program using large arrays and could not resolve it
-   the -mrtd flag was dropped).
+   until the -mrtd flag was dropped).
 
 5. The mex file extension was changed from .dll to .mexw32 in Matlab version
    7.1 and the new Gnumex honours this.
@@ -57,11 +57,11 @@ CHANGES BETWEEN VERSION 1.12 AND 1.13
 
 The changes are mostly cosmetic. Comments at the start of gnumex.m were updated
 slightly (and version number corrected). An extraneous file (mexopts.bat) was
-removed and rccompile.pl (which may be needed by some older Windows/Matlab
-versions) was added again (it was somehow lost between v1.11 and v1.12). K.J.
+removed and rccompile.pl was added again (it was somehow lost between v1.11 and 
+v1.12). K.J.
 
 
-CHANGES BETWEEEN VERSION 1.13 AND 2.0
+CHANGES BETWEEEN VERSION 1.13 AND 2.00
 1. Support for Fortran 90/95 has been added (both g95 and gfortran). Two new
    Fortran 95 example programs have been written, one in the file yprime95.f90
    which copies the usual yprime example, and the other more comprehensive in
@@ -72,8 +72,8 @@ CHANGES BETWEEEN VERSION 1.13 AND 2.0
    added. The size of the box with the options file name has been increased to
    be able to show the name of the default file in full.
 
-3. Creation of a "stub" file fixup.c has been made optional removed. This file
-   is probably only needed by Windows 95.
+3. Creation of a "stub" file fixup.c has been made optional. This file is
+   probably only needed by Windows 95.
 
 4. With the -v switch mex now displays both the compile and the link commands
    that are used. This can be useful for writing makefiles to do mexing.
@@ -112,3 +112,15 @@ CHANGES BETWEEEN VERSION 1.13 AND 2.0
     variable contained spaces (unless compiling was done separately).
 
 Kristjan Jonasson (jonasson@hi.is)
+
+
+CHANGES FROM VERSION 2.00 TO 2.01
+
+1. Corrected a bug that caused gnumex to fail when loading gnumexcfg.mat if 
+   an older gnumex version was installed on top of a newer one.
+2. Added -mrtd switch again for Matlab versions before 7.4 (the old .lib 
+   files seem require this switch). (See 1.11-->1.12 change no. 4 above).
+3. Corrected a bug in mexinterface_c.f90 that made it incompatible with g95.
+4. Corrected description in readme-fortran.txt of how to call powerit.
+
+KJ

@@ -15,7 +15,7 @@ function varargout = gnumex(varargin)
   % (at your option) any later version.
 
   % current version number
-  VERSION = '2.00';
+  VERSION = '2.01';
   [MING CYMN CYGW] = deal(1,2,3);
   [C, F77, G95, GFORTRAN] = deal(1,2,3,4);
   mlv = sscanf(version,'%f',1); % MATLAB VERSION
@@ -492,8 +492,14 @@ function varargout = gnumex(varargin)
   elseif (strcmp(action, 'cfg_defaults'))
     % load cfg file, otherwise return defaults
     pstruct = gnumex('defaults');
-    tmp = gnumex('loadconfig', pstruct.cfgfile);
-    if ~isempty(tmp), pstruct = tmp; end
+    tmp = gnumex('loadconfig', pstruct.cfgfile); 
+    if ~isempty(tmp) % copy only fields from config file that are in default pstruct
+      fn = fieldnames(pstruct);
+      for i = 1:length(fn)
+        fni = fn{i};
+        if isfield(tmp,fni), pstruct.(fni) = tmp.(fni); end
+      end
+    end
     varargout = {pstruct};
 
   elseif (strcmp(action, 'defaults'))
@@ -1216,6 +1222,7 @@ function varargout = gnumex(varargin)
     if pps.lang ~= C % fortran
       % stdcall compile, upper case symbols, no underscore suffix
       c = ['-fno-underscoring ' c];
+      if mlv < 7.4, c = ['-mrtd ' c]; end
       if ismember(pps.lang, [F77, G95]), c = ['-fcase-upper ' c]; end
     end
     fp(['set COMPFLAGS=-c -DMATLAB_MEX_FILE ' c]);
