@@ -68,11 +68,12 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs)
   !   powerit(x, 1000, a)
   !
   !   % Iterate with the matrix [1 0 0 1; 0 2 0 0; 0 0 3 0; 1 0 0 4]
-  !   av =        [1 1 2 3 1 4]
-  !   ir = uint32([0 3 1 2 0 3])
+  !   av =        [1 1 2 3 1 4];
+  !   ir = uint32([0 3 1 2 0 3]);
   !   jc = uint32([0 2 3 4 6]);
   !   x = [1 1 1 1]';
   !   powerit(x, 10, av, ir, jc)
+  !   (should give the answer 4.3015).
   
   use mexinterface
   use powerit_mod
@@ -97,15 +98,15 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs)
   call c_f_pointer( mxGetPr   (prhs(2)), nit        )
   call c_f_pointer( mxGetPr   (plhs(1)), lambda     )
   if (nrhs == 3) then
-    ok = mxIsSparse(prhs(3))
-    call assert(logical(mxIsSparse(prhs(3))), 'A must be sparse')
+    ok = mxIsSparse(prhs(3)) == 1
+    call assert(ok, 'A must be sparse')
     call assert(n3==n .and. m3==n, 'A must be nxn and x must be an n-vector')
     nzmax = mxGetNzmax(prhs(3))
     call c_f_pointer( mxGetPr   (prhs(3)), pr, [nzmax] )
     call c_f_pointer( mxGetIr   (prhs(3)), ir, [nzmax] )
     call c_f_pointer( mxGetJc   (prhs(3)), jc, [n+1]   )
   else ! nrhs == 5
-    ok = .not. mxIsSparse(prhs(3))
+    ok = mxIsSparse(prhs(3)) == 0
     call assert(ok, 'AV must not be sparse')
     call assert(min(n3, m3) == 1, 'AV must be a vector')
     nzmax = max(n3, m3);

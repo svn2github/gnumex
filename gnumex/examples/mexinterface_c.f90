@@ -56,9 +56,8 @@ module mexinterface
     end function mxgetnzmax
 
     function mxissparse(pm) bind(C, name = 'MXISSPARSE')
-      import c_int, c_bool
-      integer(c_int) :: pm
-      logical(c_bool) :: mxissparse
+      import c_int
+      integer(c_int) :: pm, mxissparse
     end function mxissparse
 
   end interface
