@@ -124,3 +124,19 @@ CHANGES FROM VERSION 2.00 TO 2.01
 4. Corrected description in readme-fortran.txt of how to call powerit.
 
 KJ
+
+
+CHANGES FROM VERSION 2.01 TO 2.02
+Matlab version comparison corrected by Oliver Woodford (thank you Oliver!). This
+is "Problem 1" described by Greg Lee on the Gnumex mailing list on 20 July 2010,
+and it has been earlier described by a few others.
+
+Hopefully I can work on the 64 bit version soon.
+KJ
+
+
+CHANGES FROM VERSION 2.02 TO 2.03
+It turned out that some of Oliver's changes needed refinement. In addition
+automatic correction of mex.pl bug discussed in the README file has been
+incorporated.
+KJ

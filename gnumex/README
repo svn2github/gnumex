@@ -97,6 +97,23 @@ ACCOMPANYING DOCUMENTATION AND EXAMPLE FILES:
    changes.txt         Lists changes after Gnumex version 1.11
    README              This file
 
+ERROR IN MEX.PL IN MATLAB 7.10 AND 7.11
+   There is a bug in the file [matlabroot '/bin/mex.pl']: Line 811 should be:
+       $IMPLICIT_LIBS = getValidInputLinkLibraries();
+   (the brackets are missing---many thanks to "anonymous" and "Simon" for
+   finding this error). The error caused mex to fail because it ended up
+   thinking that getValidInputLinkLibraries was a library. I was not able to
+   find a way around the error, so I ended up having gnumex automatically
+   correcting the Matlab distribution. This correction may fail if mex.pl is
+   not writeable. Gnumex should complain if this happens and then you need
+   to somehow make the file writeable. The error has been reported to
+   Mathworks.
+
+HOW TO CHECK GNUMEX OUT FROM SVN
+   The following command will check out gnumex from the sourceforge svn
+   repository to a folder gnumex in the current folder.
+         svn co https://gnumex.svn.sourceforge.net/svnroot/gnumex/trunk .  
+   
 NEXT STEPS: The author is working on support for new compilers (including the
    Nag and the Intel Fortran 95 compilers).
 

@@ -15,11 +15,10 @@ function varargout = gnumex(varargin)
   % (at your option) any later version.
 
   % current version number
-  VERSION = '2.01';
+  VERSION = '2.03';
   [MING CYMN CYGW] = deal(1,2,3);
   [C, F77, G95, GFORTRAN] = deal(1,2,3,4);
-  mlv = sscanf(version,'%f',1); % MATLAB VERSION
-  if mlv < 5
+  if ~mlv_ge('5')
     error('gnumex will not work for Matlab versions before 5.0');
   end
 
@@ -50,7 +49,7 @@ function varargout = gnumex(varargin)
     sz = get(0, 'Screensize');
     set(0, 'Units', ounits);
 
-    gm_sz = [475 385];
+    gm_sz = [490 385];
 
     % size of gnumex window, in points
     backg1 = [1, 1, 1];
@@ -74,7 +73,7 @@ function varargout = gnumex(varargin)
     actfig = [];
 
     % path browse callback
-    if mlv >= 7.4
+    if mlv_ge('7.4')
       pbrowsecb = ['f=get(gcbo,''UserData'');' ...
         'p=uigetpath74(get(f,''UserData''));' ...
         'if ~isempty(p),set(f,''String'',p),end'];
@@ -99,15 +98,15 @@ function varargout = gnumex(varargin)
     below_lst = 26;
 
     % size for buttons, list boxes
-    lbl_sz = [203 16];
+    lbl_sz = [218 16];
     box_sz = [178 17];
     butt_sz = [64 20];
     %
     lbl_sz1 = [130 16];
-    lbl_sz2 = [151 16];
+    lbl_sz2 = [166 16];
     lst_sz = [109 32];
     lst_sz1 = [56 32];
-    txt_sz = [456 17];
+    txt_sz = [471 17];
     
     % horizontal starting points
     butt_r = 8;
@@ -744,7 +743,7 @@ function varargout = gnumex(varargin)
       if ~isempty(findstr(fnames{i},'path'))
         s = getfield(pstruct, fnames{i});
         s = adddriveletter(s);
-        if mlv >= 7.4
+        if mlv_ge('7.4')
           s = shortpath74(s);
         else
           s = shortpath(s);
@@ -832,7 +831,7 @@ function varargout = gnumex(varargin)
     %
     % parse paths
     pps = gnumex('parsepaths', pstruct);
-    if mlv >= 7.4
+    if  mlv_ge('7.4')
       mlr = shortpath74(matlabroot);
     else
       mlr = shortpath(matlabroot);
@@ -840,7 +839,7 @@ function varargout = gnumex(varargin)
     
     % get matlab version
     % find perl location
-    if mlv < 6  % matlab 5
+    if ~mlv_ge('6')  % matlab 5
       perlpath=fullfile(mlr, 'bin', 'perl.exe');
       if ~exist(perlpath,'file')
         perlpath=fullfile(mlr, 'bin','nt','perl.exe');
@@ -858,22 +857,22 @@ function varargout = gnumex(varargin)
     end
 
     % set libraries to compile for mex/eng creation
-    if mlv < 5.2    % < 5.2
+    if ~mlv_ge('5.2')  % < 5.2
       mexdefs = {'matlab.def'};
       engdefs = {'libmx.def', 'libeng.def', 'libmat.def'};
       fmexdefs = {'df50mex.def'}; % not checked
       fengdefs = {'dfmx.def', 'dfmat.def', 'dfeng.def'}; % ditto
-    elseif mlv < 5.3 % 5.2
+    elseif ~mlv_ge('5.3')  % 5.2
       mexdefs = {'matlab.def', 'libmat.def', 'libmatlb.def'};
       engdefs = {'libmx.def', 'libeng.def', 'libmat.def'};
       fmexdefs = {'df50mex.def'};
       fengdefs = {'dfmx.def', 'dfmat.def', 'dfeng.def'};
-    elseif mlv < 6  % 5.3
+    elseif ~mlv_ge('6')  % 5.3
       mexdefs = {'matlab.def', 'libmatlbmx.def'};
       engdefs = {'libmx.def', 'libeng.def', 'libmat.def'};
       fmexdefs = {'df50mex.def'};
       fengdefs = {'dfmx.def', 'dfmat.def', 'dfeng.def'};
-    elseif mlv < 7 % matlab 6
+    elseif ~mlv_ge('7')  % matlab 6
       mexdefs = {'libmx.def', 'libmex.def', 'libmat.def', '_libmatlbmx.def'};
       engdefs = {'libmx.def', 'libeng.def', 'libmat.def'};
       fmexdefs = {'libmx.def', 'libmex.def', 'libmat.def', '_libmatlbmx.def'};
@@ -915,8 +914,9 @@ function varargout = gnumex(varargin)
       end
     end
     
+    
     deffiles = unique([mexdefs,engdefs,fmexdefs,fengdefs]);
-    if mlv >= 7.4
+    if  mlv_ge('7.4')
       tit = 'Problem creating .def files';
       % Create the .def files from the lcc libraries
       path_to_deffiles = pps.precompath;
@@ -938,6 +938,19 @@ function varargout = gnumex(varargin)
       end
     else
       path_to_deffiles = [mlr '\extern\include'];
+    end
+    
+    if mlv_ge('7.10')
+      % Correct error in mex.pl if possible
+      tit = 'Cannot correct mex.pl---see README file in gnumex folder';
+      if gui_f,
+        set(gcf, 'pointer', 'watch');
+      else
+        disp('correcting mex.pl...');
+      end
+      [ok, msg] = correct_mex_pl();
+      if ~ok, errmsg(tit, msg); return, end
+      if gui_f, set(gcf, 'pointer', 'arrow'); end
     end
     
     % Optimization levels
@@ -993,7 +1006,7 @@ function varargout = gnumex(varargin)
 
     % specify libraries
     % eng / mat library root name, library list
-    if mlv >= 7
+    if mlv_ge('7')
       defs2convert = unique([mexdefs, engdefs]);
       if pps.mexf == 1
         libraries = mexlibs;
@@ -1009,7 +1022,7 @@ function varargout = gnumex(varargin)
           defs2convert = fmexdefs;
         end
         librootn = 'mexlib';
-        if mlv >= 7, libraries = mexlibs; end
+        if mlv_ge('7'), libraries = mexlibs; end
       else % engine file
         if pps.lang == C  % c/c++
           defs2convert = engdefs;
@@ -1056,7 +1069,7 @@ function varargout = gnumex(varargin)
     rewritef = 0;
     INCROOT = [path_to_deffiles '\'];
     for i = 1:length(defs2convert)
-      if mlv >= 7
+      if mlv_ge('7')
         [pa,fn,ext]=fileparts(defs2convert{i});
         if pps.lang ~= C, fn = ['f' fn]; end
       else
@@ -1156,8 +1169,8 @@ function varargout = gnumex(varargin)
     for i = 1:size(rep, 1)
       fp(['rem ' rep(i,:)]);
     end
-
-    fp(['rem Matlab version ' num2str(mlv)]);
+    mlv = sscanf(version, '%d.%d');
+    fp(['rem Matlab version ' num2str(mlv(1)) '.' num2str(mlv(2))]);
     fp('rem');
     fp(['set MATLAB=' mlr]);
     fp(['set GM_PERLPATH=' perlpath]);
@@ -1199,7 +1212,7 @@ function varargout = gnumex(varargin)
     fp('rem compiler options; add compiler flags to compflags as desired');
     fp('set NAME_OBJECT=-o');
     
-    if mlv > 5.1
+    if mlv_ge('5.2')
       if ismember(pps.lang, [C, F77])
         fp(['set COMPILER=gcc']);
       elseif pps.lang == G95
@@ -1222,7 +1235,7 @@ function varargout = gnumex(varargin)
     if pps.lang ~= C % fortran
       % stdcall compile, upper case symbols, no underscore suffix
       c = ['-fno-underscoring ' c];
-      if mlv < 7.4, c = ['-mrtd ' c]; end
+      if ~mlv_ge('7.4'), c = ['-mrtd ' c]; end
       if ismember(pps.lang, [F77, G95]), c = ['-fcase-upper ' c]; end
     end
     fp(['set COMPFLAGS=-c -DMATLAB_MEX_FILE ' c]);
@@ -1244,7 +1257,7 @@ function varargout = gnumex(varargin)
     end
     linker = '%GM_PERLPATH% %GM_UTIL_PATH%\linkmex.pl';
     if (pps.mexf == 1)    % mexf compile
-      if mlv >= 7.1, oext = 'mexw32'; else oext = 'dll'; end
+      if mlv_ge('7.1'), oext = 'mexw32'; else oext = 'dll'; end
     else                  % engine compile
       oext = 'exe';
     end
@@ -1727,3 +1740,31 @@ function path = adddriveletter(path) % if path starts with \ and not \\ add x:
       path = [p(1:2) path];
     end
   end
+  
+function [ok, msg] = correct_mex_pl
+  ok = 0; msg = '';
+  mex_pl = [matlabroot '\bin\mex.pl'];
+  if exist(mex_pl, 'file')
+    fid = fopen(mex_pl,'rt');
+    if fid < 0, msg = ['Cannot open ' mex_pl]; return, end
+    s = fread(fid, '*char')';
+    fclose(fid);
+    k = strfind(s, 'getValidInputLinkLibraries;');
+    if isempty(k), ok = 1; return, end % already corrected or no need to correct
+    ss=regexprep(s,'getValidInputLinkLibraries;','getValidInputLinkLibraries();');
+    fid = fopen(mex_pl, 'wt');
+    if fid < 0, msg = ['Cannot open ' mex_pl ' for writing']; return, end
+    n = fwrite(fid, ss', '*char');
+    if n == 0, msg = ['Cannot write to ' mex_pl]; return, end
+    ok = 1;
+  end
+    
+function mlv_ge = mlv_ge(v)
+  m = sscanf(version, '%d.%d.%d.%d');
+  v = sscanf(v, '%d.%d');
+  switch length(v)
+    case 0, mlv_ge = 1;
+    case 1, mlv_ge = m(1) >= v(1);
+    otherwise, mlv_ge = m(1) == v(1) & m(2) >= v(2) | m(1) > v(1);
+  end
+  
