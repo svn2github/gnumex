@@ -109,10 +109,12 @@ ERROR IN MEX.PL IN MATLAB 7.10 AND 7.11
    to somehow make the file writeable. The error has been reported to
    Mathworks.
 
-HOW TO CHECK GNUMEX OUT FROM SVN
-   The following command will check out gnumex from the sourceforge svn
-   repository to a folder gnumex in the current folder.
-         svn co https://gnumex.svn.sourceforge.net/svnroot/gnumex/trunk .  
+HOW TO CHECK GNUMEX OUT-FROM / IN-TO SVN REPOSITORY
+   The following Unix command will check out gnumex from the sourceforge svn
+   repository to a folder gnumex in the current folder:
+         svn co https://gnumex.svn.sourceforge.net/svnroot/gnumex/trunk .
+   Developers can check in by issuing (from the gnumex folder):
+         svn commit -m 'Description-of-change'
    
 NEXT STEPS: The author is working on support for new compilers (including the
    Nag and the Intel Fortran 95 compilers).
