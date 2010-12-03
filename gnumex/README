@@ -98,7 +98,7 @@ ACCOMPANYING DOCUMENTATION AND EXAMPLE FILES:
    README              This file
 
 ERROR IN MEX.PL IN MATLAB 7.10 AND 7.11
-   There is a bug in the file [matlabroot '/bin/mex.pl']: Line 811 should be:
+   There is a bug in the file [matlabroot '/bin/mex.pl']: Line 809 should be:
        $IMPLICIT_LIBS = getValidInputLinkLibraries();
    (the brackets are missing---many thanks to "anonymous" and "Simon" for
    finding this error). The error caused mex to fail because it ended up
@@ -112,12 +112,16 @@ ERROR IN MEX.PL IN MATLAB 7.10 AND 7.11
    manually, and edit mex_helper.m to make matlab_bin_location point to the
    location of mex.pl. The error has been reported to Mathworks.
 
-HOW TO CHECK GNUMEX OUT-FROM / IN-TO SVN REPOSITORY
+HOW TO CHECK GNUMEX OUT-FROM/IN-TO SVN REPOSITORY AND RELEASE
    The following Unix command will check out gnumex from the sourceforge svn
    repository to a folder gnumex in the current folder:
-         svn co https://gnumex.svn.sourceforge.net/svnroot/gnumex/trunk .
+     svn co https://gnumex.svn.sourceforge.net/svnroot/gnumex/trunk .
    Developers can check in by issuing (from the gnumex folder):
-         svn commit -m 'Description-of-change'
+     svn commit -m 'Description-of-change'
+   Developer k10 can release using:
+     scp gnumex.zip k10,gnumex@frs.sourceforge.net:/home/frs/project/g/gn/gnumex/gnumex-X.YY.zip
+   Developer k10 can login to repository with:
+     ssh -t k10,gnumex@shell.sourceforge.net create
    
 NEXT STEPS: The author is working on support for new compilers (including the
    Nag and the Intel Fortran 95 compilers).
