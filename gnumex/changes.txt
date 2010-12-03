@@ -140,3 +140,8 @@ It turned out that some of Oliver's changes needed refinement. In addition
 automatic correction of mex.pl bug discussed in the README file has been
 incorporated.
 KJ
+
+CHANGES FROM VERSION 2.03 TO 2.04
+Changed error when mex.pl file could not be written to into a warning. Added
+description of workaround of what can be done in this case to readme file.
+KJ

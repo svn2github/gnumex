@@ -105,9 +105,12 @@ ERROR IN MEX.PL IN MATLAB 7.10 AND 7.11
    thinking that getValidInputLinkLibraries was a library. I was not able to
    find a way around the error, so I ended up having gnumex automatically
    correcting the Matlab distribution. This correction may fail if mex.pl is
-   not writeable. Gnumex should complain if this happens and then you need
-   to somehow make the file writeable. The error has been reported to
-   Mathworks.
+   not writeable. Gnumex issues a worning if this happens. If the file cannot
+   be made writable, a possible workaround is to copy the m-file mex_helper.m
+   and the mex.pl file from the Matlab distribution to a local folder, make sure
+   that folder is early in the the Matlab search path, correct the bug in mex.pl
+   manually, and edit mex_helper.m to make matlab_bin_location point to the
+   location of mex.pl. The error has been reported to Mathworks.
 
 HOW TO CHECK GNUMEX OUT-FROM / IN-TO SVN REPOSITORY
    The following Unix command will check out gnumex from the sourceforge svn

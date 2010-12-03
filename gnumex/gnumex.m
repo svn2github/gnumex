@@ -15,7 +15,7 @@ function varargout = gnumex(varargin)
   % (at your option) any later version.
 
   % current version number
-  VERSION = '2.03';
+  VERSION = '2.04';
   [MING CYMN CYGW] = deal(1,2,3);
   [C, F77, G95, GFORTRAN] = deal(1,2,3,4);
   if ~mlv_ge('5')
@@ -933,7 +933,11 @@ function varargout = gnumex(varargin)
           disp('Making .def-files ...');
         end
         [ok, msg] = gnumex('makedeffiles', nm, full_deffiles);
-        if ~ok, errmsg(tit, msg); return, end
+        if ~ok
+          errmsg(tit, msg); 
+          if gui_f, set(gcf, 'Pointer', 'arrow'); end
+          return
+        end
         if gui_f, set(gcf, 'Pointer', 'arrow'); end
       end
     else
@@ -949,7 +953,9 @@ function varargout = gnumex(varargin)
         disp('correcting mex.pl...');
       end
       [ok, msg] = correct_mex_pl();
-      if ~ok, errmsg(tit, msg); return, end
+      if ~ok, 
+        warnmsg(tit, msg); 
+      end
       if gui_f, set(gcf, 'pointer', 'arrow'); end
     end
     
@@ -1148,7 +1154,7 @@ function varargout = gnumex(varargin)
     % make a little report
     rep = char(gnumex('report', pps, rewritef));
 
-    % inline functin for printing to options .bat file
+    % inline function for printing to options .bat file
     fp = inline(['fprintf(' num2str(fid) ', ''%s\n'', x)']);
     
     % at last
