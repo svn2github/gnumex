@@ -6,6 +6,8 @@
      (>> delete ([prefdir '\mexopts.bat'])). Then do:
      >> mex shortpath.c
 
+ */
+
 #include <windows.h>
 #include <string.h>
 #include "mex.h"

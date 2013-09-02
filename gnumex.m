@@ -15,7 +15,7 @@ function varargout = gnumex(varargin)
   % (at your option) any later version.
 
   % current version number
-  VERSION = '2.04';
+  VERSION = '2.05';
   [MING CYMN CYGW] = deal(1,2,3);
   [C, F77, G95, GFORTRAN] = deal(1,2,3,4);
   if ~mlv_ge('5')
@@ -73,7 +73,11 @@ function varargout = gnumex(varargin)
     actfig = [];
 
     % path browse callback
-    if mlv_ge('7.4')
+    if mlv_ge('7.6')
+      pbrowsecb = ['f=get(gcbo,''UserData'');' ...
+        'p=uigetdir(get(f,''UserData''));' ...
+        'if ~isempty(p),set(f,''String'',p),end'];
+    elseif mlv_ge('7.4')
       pbrowsecb = ['f=get(gcbo,''UserData'');' ...
         'p=uigetpath74(get(f,''UserData''));' ...
         'if ~isempty(p),set(f,''String'',p),end'];
@@ -507,7 +511,7 @@ function varargout = gnumex(varargin)
     % Collect sensible defaults
     % use mingw unless cygwin is installed and mingw is not
     [cygwinpath, mingwpath, gfortpath, g95path] = find_paths();
-    if isempty(mingwpath) & ~isempty(cygwinpath)
+    if isempty(mingwpath) && ~isempty(cygwinpath)
       environ = CYMN;
     else
       environ = MING;
@@ -570,7 +574,7 @@ function varargout = gnumex(varargin)
     if nargin < 2
       PDefs = get(gcf, 'UserData');
       % ckeck if this is valid information
-      if ~isstruct(PDefs) | ~isfield(PDefs, 'handle')
+      if ~isstruct(PDefs) || ~isfield(PDefs, 'handle')
         varargout = {[]};
         return
       end
@@ -684,8 +688,8 @@ function varargout = gnumex(varargin)
     outvs = [outvs; fdwarn(ps.gnumexpath, 'mexdlltool.exe')];
     outvs = [outvs; fdwarn(ps.gnumexpath, 'uigetpath.dll')];
     outvs = [outvs; fdwarn(ps.gnumexpath, 'shortpath.dll')];
-    outvs = [outvs; fdwarn(ps.gnumexpath, 'uigetpath74.mexw32')];
-    outvs = [outvs; fdwarn(ps.gnumexpath, 'shortpath74.mexw32')];
+    outvs = [outvs; fdwarn(ps.gnumexpath, ['uigetpath74.', 'mexw32'])];
+    outvs = [outvs; fdwarn(ps.gnumexpath, ['shortpath74.', 'mexw32'])];
     errinds = cat(1, outvs{:, 1});
     varargout = {all(errinds) outvs(~errinds, 2)};
     
@@ -743,7 +747,11 @@ function varargout = gnumex(varargin)
       if ~isempty(findstr(fnames{i},'path'))
         s = getfield(pstruct, fnames{i});
         s = adddriveletter(s);
-        if mlv_ge('7.4')
+        if mlv_ge('7.6') 
+          if ~isempty(s)
+            s = getwinshortpath(s);
+          end
+        elseif mlv_ge('7.4')
           s = shortpath74(s);
         else
           s = shortpath(s);
@@ -767,7 +775,14 @@ function varargout = gnumex(varargin)
     deffiles = varargin{3};
     % defdir = varargin{4};
     % libs will probably be {'libmex', 'libmx', 'libmat', 'libeng'};
-    libdir = [matlabroot '\extern\lib\win32\lcc\'];
+    if ~isempty(strfind(computer('arch'), '64'))
+      % there is no 64 bit lcc version, so the libs are in a new location
+      % on 64 bit machines
+      libdir = [matlabroot '\extern\lib\win64\microsoft\'];
+    else
+      libdir = [matlabroot '\extern\lib\win32\lcc\'];
+    end
+    
     for i=1:length(deffiles)
       [p, lib] = fileparts(deffiles{i});
       [err,list] = dos([nmcmd ' -g --defined-only "' libdir lib '.lib"']);
@@ -786,8 +801,18 @@ function varargout = gnumex(varargin)
       end
       fprintf(fid, 'LIBRARY %s.dll\nEXPORTS\n', lib);
       J = strmatch('_', symbols)';
-      for j = J, symbols{j}(1) = ''; end
-      for j = 1:length(symbols), fprintf(fid,'%s\n', symbols{j}); end
+      
+      for j = J
+        symbols{j}(1) = '';
+      end
+      % write the symbol to the definitions file, ignoring .text entiries
+      % currently produced by the 64 bit Mingw
+      for j = 1:length(symbols)
+        if isempty(strfind(symbols{j}, '.text'))
+          fprintf(fid,'%s\n', symbols{j}); 
+        end
+      end
+      
       fclose(fid);
       ok = 1;
       varargout = {ok,''};
@@ -831,7 +856,9 @@ function varargout = gnumex(varargin)
     %
     % parse paths
     pps = gnumex('parsepaths', pstruct);
-    if  mlv_ge('7.4')
+    if mlv_ge('7.6')
+     mlr = getwinshortpath(matlabroot);
+    elseif  mlv_ge('7.4')
       mlr = shortpath74(matlabroot);
     else
       mlr = shortpath(matlabroot);
@@ -922,9 +949,12 @@ function varargout = gnumex(varargin)
       path_to_deffiles = pps.precompath;
       full_deffiles = strcat(path_to_deffiles, '\', deffiles); 
       if ~all(paths_exist(full_deffiles))
-        % Check that nm.exe can be found
-        nm = fullfile(pps.cygwinpath, 'bin', 'nm.exe');
-        if ~exist(nm, 'file'), nm = fullfile(pps.mingwpath, 'bin', 'nm.exe'); end
+        % Use correct nm.exe from selected environment
+        if pps.environ > 1
+            nm = fullfile(pps.cygwinpath, 'bin', 'nm.exe');
+        else
+            nm = fullfile(pps.mingwpath, 'bin', 'nm.exe');
+        end
         if ~exist(nm, 'file'), nm = fullfile(pps.gfortpath, 'nm.exe'); end
         if ~exist(nm, 'file'), errmsg(tit, 'Cannot find nm.exe');  return, end
         if gui_f, 
@@ -1163,6 +1193,8 @@ function varargout = gnumex(varargin)
     else
       disp(rep);
     end
+    
+    mexoptsfilename = 'GNUMEXOPTS.bat';
 
     % --------------------------------------------------------------
 
@@ -1175,9 +1207,21 @@ function varargout = gnumex(varargin)
     for i = 1:size(rep, 1)
       fp(['rem ' rep(i,:)]);
     end
+    fp('rem StorageVersion: 1.0');
+%     fp('rem CkeyName: GNU C');
+%     fp('rem CkeyManufacturer: GNU');
+%     fp('rem CkeyLanguage: C');
+%     fp('rem CkeyVersion:');
+%     fp(['rem CkeyFileName: ', mexoptsfilename])
+    fp('rem C++keyName: GNU C++');
+    fp('rem C++keyManufacturer: GNU');
+    fp('rem C++keyLanguage: C++');
+    fp('rem C++keyVersion:');
+    fp(['rem C++keyFileName: ', mexoptsfilename]);
     mlv = sscanf(version, '%d.%d');
     fp(['rem Matlab version ' num2str(mlv(1)) '.' num2str(mlv(2))]);
     fp('rem');
+    fp(['set GCCINSTALLDIR=' tools_path]);
     fp(['set MATLAB=' mlr]);
     fp(['set GM_PERLPATH=' perlpath]);
     fp(['set GM_UTIL_PATH=' pps.gnumexpath]);
@@ -1188,6 +1232,7 @@ function varargout = gnumex(varargin)
     fp(['set PATH=%PATH%;C:\Cygwin\usr\local\gfortran\libexec\gcc\i686-pc-cygwin\4.3.0']);
     fp(['set LIBRARY_PATH=' lib_path]);
     fp(['set G95_LIBRARY_PATH=' lib_path]);
+    fp(['set MW_TARGET_ARCH=',computer('arch')]);
     fp('rem');
     fp('rem precompiled library directory and library files');
     fp(['set GM_QLIB_NAME=' pps.precompath]);
@@ -1248,13 +1293,14 @@ function varargout = gnumex(varargin)
     fp(['set OPTIMFLAGS=' optimflags{pps.optflg}]);
     fp('set DEBUGFLAGS=-g');
     if pps.lang == C
-      fp(['set CPPCOMPFLAGS=%COMPFLAGS% -x c++ ' c]);
+      fp(['set CPPCOMPFLAGS=%COMPFLAGS% -x c++ -fpermissive' c]);
       fp('set CPPOPTIMFLAGS=%OPTIMFLAGS%');
       fp('set CPPDEBUGFLAGS=%DEBUGFLAGS%');
     end
     fp('rem');
     fp('rem NB Library creation commands occur in linker scripts');
-
+    fp('rem but LIBLOC is provided for compatibility with');
+    fp('rem mex.getCompilerConfigurations');
     % main linker parameters
     if pps.environ == CYMN  % cygwin/mingw compile
       linkfs = ['-mno-cygwin -mwindows'];
@@ -1263,7 +1309,11 @@ function varargout = gnumex(varargin)
     end
     linker = '%GM_PERLPATH% %GM_UTIL_PATH%\linkmex.pl';
     if (pps.mexf == 1)    % mexf compile
-      if mlv_ge('7.1'), oext = 'mexw32'; else oext = 'dll'; end
+      if mlv_ge('7.1'),        
+        oext = mexext; 
+      else
+        oext = 'dll';
+      end
     else                  % engine compile
       oext = 'exe';
     end
@@ -1277,6 +1327,7 @@ function varargout = gnumex(varargin)
 
     fp('rem');
     fp('rem Linker parameters');
+    fp('set LIBLOC=');
     fp(['set LINKER=' linker]);
     fp(['set LINKFLAGS=' linkfs]);
     if pps.lang == C % c
@@ -1307,7 +1358,77 @@ function varargout = gnumex(varargin)
     else
       disp(msg);
     end
-
+    
+    % now try and copy the mexopts file to the same location as the other
+    % compiler opt files so that matlab's CompilerConfiguration object can
+    % find it.
+    [status, cpmessage] = copyfile(pstruct.optfile, fullfile(matlabroot,'bin',computer('arch'),'mexopts',mexoptsfilename));
+    if status ~= 1
+        warning('GNUMEX:copyfail', ...
+                ['Could not copy the created mexopts.bat file to the directory: \n%s\n', ...
+                 'This only means that commands such as mex.getCompilerConfigurations ', ...
+                 'will not work. It does not affect the ability to compile mex or ', ...
+                 'other files. To fix this problem you must copy the contents of ', ...
+                 'the file\n\n %s \n\nto the file \n\n%s\n\nThe copyfile funtion reported the following error ', ...
+                 'when it attempted this:\n\n%s'], ...
+                 fullfile(matlabroot,'bin',computer('arch'),'mexopts'), ...
+                 pstruct.optfile, ...
+                 fullfile(matlabroot,'bin',computer('arch'),'mexopts',mexoptsfilename), ...
+                 cpmessage);
+    end
+    
+    % Now create the .stp perl file required by matlab's
+    % CompilerConfiguration object
+    [pathstr, name] =  fileparts(pstruct.optfile);
+    pstruct.stpfile = fullfile(pathstr, [name, '.stp']);
+    fid = fopen(pstruct.stpfile, 'w');
+    % inline function for printing to .stp file
+    fp = inline(['fprintf(' num2str(fid) ', ''%s\n'', x)']);
+    fp('# stp file generated by gnumex');
+    fp('sub gnumexopts');
+    fp('{');
+    fp('');
+    fp('    my @language_handled = (''C'');');
+    fp(['    my $default_location = "',strrep(tools_path, '\', '\\'),'";']);
+    fp('');
+    fp('    my $locate_fcn = sub {');
+    fp(['        return "',strrep(tools_path, '\', '\\'),'";']);
+    fp('    };');
+    fp('    my $root_val = sub {');
+    fp('        my $err_msg, $warn_msg;');
+    fp('        return ($err_msg, $warn_msg);');
+    fp('    };    ');
+    fp('');
+    fp('    return {');
+    fp('        "vendor_name"      => "gcc",');
+    fp('        "version"          => "",                          #This version is left blank intentionally. ');
+    fp('        "group_id"         => "gcc",');
+    fp('        "serial"           => 4,');
+    fp('        "root_var"         => "GCCINSTALLDIR",');
+    fp(['        "optfile_name"     => "',mexoptsfilename,'",']);
+    fp('        "default_location" => $default_location,');
+    fp('        "language_handled" => \@language_handled,');
+    fp('        "root_val"         => $root_val,');
+    fp('        "locate"           => $locate_fcn,');
+    fp('        };');
+    fp('}');
+    fp('1;');
+    fclose(fid);
+    [status, cpmessage] = copyfile(pstruct.stpfile, fullfile(matlabroot,'bin',computer('arch'),'mexopts',strrep(mexoptsfilename, '.bat', '.stp')));
+    if status ~= 1
+        warning('GNUMEX:copyfail', ...
+                ['Could not copy the created mexopts.stp file to the directory: \n%s\n', ...
+                 'This only means that commands such as mex.getCompilerConfigurations ', ...
+                 'will not work. It does not affect the ability to compile mex or ', ...
+                 'other files. To fix this problem you must copy the contents of ', ...
+                 'the file \n\n%s\n\n to the file \n\n%s\n\nThe copyfile funtion reported the following error ', ...
+                 'when it attempted this:\n\n%s'], ...
+                 fullfile(matlabroot,'bin',computer('arch'),'mexopts'), ...
+                 pstruct.stpfile, ...
+                 fullfile(matlabroot,'bin',computer('arch'),'mexopts',strrep(mexoptsfilename, '.bat', '.stp')), ...
+                 cpmessage);
+    end
+    
     % --------------------------------------------------------------
 
   elseif (strcmp(action, 'report'))
