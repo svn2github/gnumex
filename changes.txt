@@ -145,3 +145,8 @@ CHANGES FROM VERSION 2.03 TO 2.04
 Changed error when mex.pl file could not be written to into a warning. Added
 description of workaround of what can be done in this case to readme file.
 KJ
+
+CHANGES FROM VERSION 2.04 TO 2.05
+Added support for 64 bit matlab, and now create a .stp file if possible, so
+gcc appears in the list of located compilers when running mex -setup
+RC
