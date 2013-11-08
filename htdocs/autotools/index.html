@@ -1,0 +1,303 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+
+<HTML><HEAD>
+<link rel="stylesheet" type="text/css" href="autotools.css">	
+<TITLE>Mex files with Mingw / Cygwin gcc</TITLE>
+
+<meta content="matlab, gcc, mex, windows, 32 bit, 95, 98, 9x, NT,
+2000, XP, Mingw, Cygnus, Cygwin, EGCS, compiler, bat files, scripts" name="Classification">
+<meta content="Instructions and links for using the Mingw / Cygwin gcc for windows 9x/NT matlab" name="Description">
+<meta content="matlab, gcc, mex, windows, 32 bit, 95, 98, NT, 2000,
+XP, Mingw, Cygnus, Cygwin, gcc, compiler, bat files, scripts" name="KeyWords">
+
+<META content=MarsBaR name=description>
+
+</HEAD>
+
+<!-- table of contents start -->
+<H1><A NAME="toc"></A>Table of Contents</H1>
+<UL>
+    <LI><A HREF="#autotools">Using GNU Autotools</A>
+        <UL>
+            <LI><A HREF="#configure_ac">configure.ac</A></li>
+            <LI><A HREF="#makefile_am">Makefile.am</A></li>
+            <LI><A HREF="#building_example">Building the example</A></li>
+        </UL>
+    </li>
+    <li><A href="#advanced">Advanced Topics</a>
+        <ul>
+            <li><a href="#wrap">Wrapping functions</a></li>
+            <li><a href="#memory">Allocating Memory</a></li>
+        </ul>
+    </li>
+    <li><A href="#references">References</a>
+    </li>
+</UL>
+<!-- table of contents end -->
+
+<H1><A NAME="autotools"></A>Compiling Matlab mex files with GNU autotools</H1>
+
+This page gives an introduction into using GNU autotools autoconf and automake
+to automate the building of MEX files.
+
+<p>
+There are several benefits to using the autotools.  As projects grow bigger
+the Makefiles can become very complex.  The source for the example setup can
+be found <a href="http://gnumex.sourceforge.net/autotools/example.zip">here</a>.
+</p>
+
+<h2><A NAME="configure_ac"></A>configure.ac</h2>
+<p>
+    Key autoconf macros:
+    <ul>
+        <li>AC_INIT<br>
+          Initializes configure, processes arguments, and performs a few cheks.
+          All configure scripts must call this.  This is one of only two
+          required macros.
+        </li>
+        <li>AC_OUTPUT<br>
+          Tells configure to create the output files.  This is the second
+          required macro.
+        </li>
+        <li>AC_CONFIG_FILES<br>
+          Tells configure which files to create output.  The argument should
+          be a space separated list of files (i.e. Makefile, etc).
+        </li>
+        <li>AC_PROG_CC<br>
+          Tries to find a C compiler.  If no input argument is given, it will
+          look for gcc and then cc.  You can specify a space-separated list of
+          compilers to look for.  In either invocation, configure first checks
+          for the CC environment variable and uses that definition if possible.
+          This way a user can use their own c compiler.
+        </li>
+        <li>AC_PROG_F77,AC_PROG_FC<br>
+          Tries to find a Fortran 77 or 95/90/77 compiler respectively. Like
+          AC_PROG_CC, AC_PROG_F* can take an optional first argument specifying
+          a space-separated list of compilers to look for.  
+          In either invocation, configure first checks for the F77/FC
+          environment variable and uses that definition if possible.
+          This way a user can use their own fortran compiler.
+        </li>
+        <li>AC_ARG_WITH(package,,,),AC_ARG_ENABLE(feature,,,)<br>
+            Checks for an argument of the form --with-package and
+            --with-feature.  Combine this with AC_SUBST to enable parts of the
+            build process or substitute variables.
+        </li>
+    </ul>
+    <br>
+    In addition to the built in autoconf macros, your may write your own.  In
+    the config directory of the example is an m4 macro file matlab.m4.  This
+    macro checks for matlab given the argument --with-matlab=DIR.  This will
+    test if the link libraries and include directories exist, and make an
+    import library for linking against the libmex.dll,libmx.dll, and libmat.dll.
+    Once these are created once, the m4 should not make them again because it
+    tests for their existance.
+</p>
+
+<h2><A NAME="makefile_am"></A>Makefile.am</h2>
+<p>
+    Key automake variables:
+    <ul>
+        <li>bin_PROGRAMS<br>
+            Ordinarily, this is used to specify the names of executable programs
+            that are to be built.  But to date, this is the best way I can find
+            to trick automake into making shared libraries.  Anyways, this
+            should be set to a space separated list of mex files (without the
+            extension).
+        </li>
+        <li>mexfile_SOURCES<br>
+            First "mexfile" should be replaced by the name (exactly) of the mex
+            function in the bin_PROGRAMS list.  This specifies all the source
+            files that are needed to make the mex function.  No object files or
+            libraries go here, only sources.  Note that you can mix languages on
+            this list too.  So if your mex function uses both a C and fortran
+            source, both can be specified here.
+        </li>
+        <li>mexfile_CFLAGS,mexfile_FCFLAGS,mexfile_F77FLAGS,mexfile_CXXFLAGS<br>
+            This is a space seperated list of flags to be passed to the C,
+            fortran, fortran 77, C++ compilers respectively.  These typically
+            include include directories, optimization flags, etc.
+        </li>
+        <li>mexfile_LDFLAGS<br>
+            This is a space separated list of flags mainly used during linking.
+            Flags such as library include directories (i.e. -L).
+        </li>
+        <li>mexfile_LDADD<br>
+            This is a list of libraries the mex function needs to link against,
+            such as -lmex -lmx -lmat.
+        </li>
+    </ul>
+    Personal use:  Generally I write many routines and make libraries out of
+    them.  This has the benefit of being able to reuse the code at a later point
+    very easily by linking against the library.  Typically, my mex sources have
+    very little code in them; basically enough to take inputs from matlab, do
+    some error checking, pass this on to library routines, then give the data
+    back to matlab.  Having given my opinion on using libraries, I should give
+    a little introduction to making libraries with automake.
+    <br>There are two ways to build libraries the older but still used way
+    of using ar and ranlib, and the relatively newer libtool way.  I think the
+    older way is easier and it's what I use.
+    <br>Building libraries with automake.
+    <ul>
+        <li>lib_LIBRARIES<br>
+            This is equivelant to the bin_PROGRAMS mentioned earlier.  This is
+            a list of libraries to make.  Generally on *nix platforms the
+            convention is libname.a where "name" is replaced by whatever you 
+            want to call your library.
+        </li>
+        <li>include_HEADERS<br>
+            This is a space separated list of headers that should be
+            distributed with your library
+        </li>
+        <li>libname_a_SOURCES<br>
+            This is equivelent to the mexfile_SOURCES mentioned earlier.
+        </li>
+    </ul>
+</p>
+
+<h2><A NAME="building_example"></A>Building the example</h2>
+<p>
+    Download the <a href="http://gnumex.sourceforge.net/autotools/example.zip">
+    example</a>.  I will assume it is in /home/USER, so replace this
+    with the actual path to where you have downloaded it.
+  <p class="terminal">
+    &nbsp &nbsp $ cd /home/USER<br>
+    &nbsp &nbsp $ unzip example.zip<br>
+    &nbsp &nbsp $ mkdir gnumex-autotools-build<br>
+    &nbsp &nbsp $ cd gnumex-autotools-build<br>
+    &nbsp &nbsp $ ../gnumex-autotools/configure --with-matlab=/cygdrive/c/matlab704<br>
+    &nbsp &nbsp $ make</p><br>
+    You should now have dll/mexglx files in /home/USER/gnumex-autotools-build/refbook.
+    You can enable compiling the fortran sources by passing --enable-fortran or
+    --enable-fortran=yes.  To disable building from the C sources, pass
+    --disable-c or --enable-c=no, but you must enable fortran or configure
+    will tell you that you must use either C or fortran.
+</p>
+
+<h1><a name="advanced"></A>Advanced Topics</H1>
+Once you get used to using autotools, I hope you find them as useful as I do.
+Below are some topics I have come across I find invaluable.
+
+<h2><a name="wrap">Wrapping Functions</a></h2>
+<p>
+I have noticed that in many functions(primarily on windows) I use that get run
+a lot that I have trouble allocating memory.  I speculate this is because as
+data starts to fill up matlab's heap space my call to the system level malloc
+"fails".  I quoted fails because it's not that the system is out of memory, but
+matlab's heap space is.  When this happens in matlab, they probably ask the
+OS to increase the heap space available and retry the alloc.  Using plain
+malloc, calloc, realloc it fails and I don't want to tie my 
+"platform independent" code to petitioning the OS for more memory.  This was a
+prime concern for me because the point of my C code is to write both stand-alone
+code and matlab interfaces to that code, so I can't use Matlab's mxMalloc,etc
+without needing matlab.  So we seem to be in a predicament.
+</p>
+<p>So what's the solution?<br>
+The GNU linker ld has an option named --wrap symbol.  This wraps all
+occurrences of symbol to __wrap_symbol.
+</p>
+<p>How does this help?<br>Well all calls to wrapped symbols get passed to
+__wrap_symbol, even code that's not yours and has been compiled to say a
+library(i.e. you don't have the source).  So what I do is when compiling mex
+functions I link it against a library that has the wrapped symbols defined in
+them and specify the --wrap options.  This way when compiling the code for
+standalone I don't have to change the code AT ALL.  And since the mex sources
+and my library sources are in different build trees I don't have to change the
+mex source either.
+<p>
+<p>So how do you write a wrap function?<br>
+Here is the code for my wrapped malloc function.
+<br>
+void * __wrap_malloc(size_t size)<br>
+{<br>
+    void *ptr;<br>
+    ptr = mxMalloc(size);<br>
+    if ( ptr != NUL )<br>
+        mexMakeMemoryPersistent(ptr);<br>
+    return ptr;<br>
+}<br>
+</p>
+<p>
+So, why did I make the memory persistent?  Well one drawback to this method I
+learned the hard way is that Matlab must have some initialization code prior
+to the start of the mexFunction entry point that is being wrapped through this
+malloc too.  Since by default matlab cleans up all memory from the mex function
+unless it's made persistent, it destroys this memory too, which it thinks is
+still there later and you end up corrupting memory.  Is it a big deal to make
+all memory persistent.  Not really.  I haven't noticed any performance change.
+What it does mean is you still need to be a GOOD C programmer and clean up after
+yourself or you'll leak memory.  This leak isn't permanent and would be freed
+when Matlab quits.
+</p>
+
+<h2><a name="memory">Allocating Memory</a></h2>
+<p>
+Since most of my code is written to be external to matlab, I frequently return
+pointer to allocated memory.  If this is data that I want to pass back to
+matlab, This means I would double the memory and waste time copying memory from
+my pointer to the one matlab automaticaly allocates.  Well, the copying time
+can be fixed by freeing the data pointer and setting it to the allocated one,
+but this still doesn't fix the memory useage.
+</p>
+<p>
+Have you ever allocated an mxArray with all dimensions of 0?  What happens is
+matlab still creates the mxArray, but doesn't allocate the data pointers because
+it doesn't know the size.  Well, we can fix that by using mxSetDimensions.  But
+how does that help?  From the documentation it DOES NOT reallocate space for the
+pr/pi arrays.  So we can use mxSetData and mxSetImagData to set it to point to
+our allocated space.  This avoids both the time in copying and memory usage.
+</p>
+
+<h1><A NAME="references"></A>References</h1>
+<p>
+<ul>
+    <li>
+        autoconf<br>
+        <a href="http://www.gnu.org/software/autoconf">
+            Homepage
+        </a><br>
+        <a href="http://www.gnu.org/software/autoconf/manual/index.html">
+            Online Manual
+        </a>
+    </li>
+    <li>
+        automake<br>
+        <a href="http://sources.redhat.com/automake/">
+            Homepage
+        </a><br>
+        <a href="http://sources.redhat.com/automake/automake.html">
+            Online Manual
+        </a>
+    </li>
+</ul>
+</p>
+
+<hr>
+
+<p>Many thanks to: </p>
+
+<p>Ton Van Overbeek, who wrote the original scripts and .bat files and to: 
+
+<br>Mark Levedahl
+
+<br>Lars Gregersen
+
+<br>Christian Merkwirth
+
+<br>and to: 
+
+<br>Mumit Khan, for helpful discussion, and his contributions to gcc,
+mingw, dllwrap, which made the whole thing work.
+
+</p>
+<address>
+Christopher Hulbert<br>11 August 2005
+</address>
+
+
+<a href="http://sourceforge.net"><img
+src="http://sourceforge.net/sflogo.php?group_id=76381&amp;type=2"
+width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+
+</BODY></HTML>

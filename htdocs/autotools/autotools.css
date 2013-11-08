@@ -1,0 +1,61 @@
+  .imageryTitle       { position: absolute; left:0px; top: 350px; width: 110px; height: 1px; border: 0px; }
+  .imageryMenu        { position: absolute; left: 111px; top: 350px; width: 180px; border: 3px; visibility: hidden;}
+  .calendarMenu       { position: absolute; left: 291px; top: 350px; width: 180px; border: 3px; visibility: hidden;}
+  .experimentsMenu    { position: absolute; left: 111px; top: 380px; width: 180px; border: 3px; visibility: hidden;}
+  .helpMenu           { position: absolute; left: 111px; top: 410px; width: 180px; border: 3px; visibility: hidden;}
+  .linksMenu          { position: absolute; left: 111px; top: 440px; width: 180px; border: 3px; visibility: hidden;}
+  .GulfOfMexicoMenu   { position: absolute; left: 230px; top: 480px; width: 180px; border: 3px; visibility: hidden;}
+  .MissBightMenu      { position: absolute; left: 250px; top: 460px; width: 180px; border: 3px; visibility: hidden;}
+  .NYBightMenu        { position: absolute; left: 260px; top: 470px; width: 180px; border: 3px; visibility: hidden;}
+  .LSeas2KMenu        { position: absolute; left: 400px; top: 460px; width: 180px; border: 3px; visibility: hidden;}
+  .BalearicMenu       { position: absolute; left: 430px; top: 460px; width: 180px; border: 3px; visibility: hidden;}
+  .AdriaticMenu       { position: absolute; left: 440px; top: 460px; width: 180px; border: 3px; visibility: hidden;}
+  .NorthernRedSeaMenu { position: absolute; left: 480px; top: 490px; width: 180px; border: 3px; visibility: hidden;}
+  .PersianGulfMenu    { position: absolute; left: 500px; top: 490px; width: 180px; border: 3px; visibility: hidden;}
+  .ArabianSeaMenu     { position: absolute; left: 520px; top: 500px; width: 180px; border: 3px; visibility: hidden;}
+  .EastSeaMenu        { position: absolute; left: 620px; top: 460px; width: 180px; border: 3px; visibility: hidden;}
+
+  a.navtab:link    { font-size: 10pt; color:black; text-indent: 5px; text-decoration: none; }
+  a.navtab:visited { font-size: 10pt; color:black; text-indent: 5px; text-decoration: none; }
+  a.navtab:active  { font-size: 10pt; color:black; text-indent: 5px; text-decoration: none; }
+
+  td.selected      {background-color:rgb(255,255,255);}
+  td.normal        {background-color:rgb(242,202,8);}
+
+  a.black:visited {color:black; font-size:12pt; font-weight:bolder;}
+  a.black:active  {color:black; font-size:12pt; font-weight:bolder;}
+  a.black:link    {color:black; font-size:12pt; font-weight:bolder;}
+  a.black:hover   {color:black; font-size:12pt; font-weight:bolder;}
+  a.white:link    {color:white; font-size:16pt;}
+  a.white:active  {color:white; font-size:16pt;}
+  a.white:visited {color:white; font-size:16pt;}
+  li.red {COLOR:rgb(255,0,0); font-size:16pt;}
+  .problem:link {color:rgb(255,0,0); font-size:12pt; font-weight:bolder;
+                  background-color:rgb(10,0,110);}
+  .problem:visited {color:rgb(255,0,0); font-size:12pt; font-weight:bolder;
+                  background-color:rgb(10,0,110);}
+  .problem:active {color:rgb(255,0,0); font-size:12pt; font-weight:bolder;}
+                  background-color:rgb(10,0,110);}
+  a.regionalCenter:link {color:rgb(0,255,0); font-size:12pt; 
+                         font-weight:bolder; text-decoration:underline;}
+  a.regionalCenter:visited {color:rgb(0,255,0); font-size:12pt; 
+                            font-weight:bolder; text-decoration:underline;}
+  a.regionalCenter:active {color:rgb(0,255,0); font-size:12pt; 
+                           font-weight:bolder; text-decoration:underline;}
+  a:visited {color: rgb(255,0,0);}
+  a:link {color: rgb(0,0,255);}
+  a:active {color: rgb(0,255,0);}
+  body {background-color:rgb(255,255,255);}
+  .footer {position:absolute; top:180px; left:0px; width:780px; background-color:rgb(10,0,110);}
+  .footerText {color:white; font-size:12pt;}
+  .header {position:absolute; top:0px; left:0px; width:650px; height:300px;}
+  .mission {position:absolute; left:180px; top:700px; width:600px; height:200px;}
+  .imagerymap {position:absolute; left:180px; top:275; width:600px; height:339;}
+  .sidebar {position:absolute; left:0px; top:350px; width:108px; height:400px;}
+  .terminal {color:rgb(255,255,255); background-color:black; font-weight:bolder;}
+  #navy_site {color:white; font-weight:bolder;}
+  #thisImageStyle {position:absolute; left:595px; top:410px; visibility:false;}
+  #worldImageStyle {position:absolute; left:180px; top:275px; width:600px height:339px;}
+  #table_menu {border-style:outset; border-width:2px; background-color:rgb(242,202,8); border-bottom-color:rgb(10,0,110); width:125px; font-size:18pt; align:center;}
+  #current_products {border-style:outset; border-width:2px; background-color:white; align:center;}
+  #option {border-style:solid; border-width:2px; border-bottom-color:rgb(10,0,110); width:125px; font-size:18pt; align:center;}

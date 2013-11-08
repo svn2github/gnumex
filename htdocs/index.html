@@ -1,0 +1,657 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+
+<HTML><HEAD>
+<link rel="stylesheet" type="text/css" href="gnumex.css" />	
+<TITLE>Mex files with Mingw / Cygwin gcc</TITLE>
+
+<meta content="matlab, gcc, mex, windows, 32 bit, 95, 98, 9x, NT,
+2000, XP, Mingw, Cygnus, Cygwin, EGCS, compiler, bat files, scripts" name="Classification">
+<meta content="Instructions and links for using the Mingw / Cygwin gcc for windows 9x/NT matlab" name="Description">
+<meta content="matlab, gcc, mex, windows, 32 bit, 95, 98, NT, 2000,
+XP, Mingw, Cygnus, Cygwin, gcc, compiler, bat files, scripts" name="KeyWords">
+
+<META content=MarsBaR name=description>
+
+</HEAD>
+
+<!-- table of contents start -->
+<H1><A NAME="toc"></A>Table of Contents</H1>
+<UL>
+<LI><A HREF="#gnumex_top">Compiling Matlab mex files with gcc for Windows</A>
+<UL>
+<LI><A HREF="#mingw_cygwin">Mingw and Cygwin</A>
+<LI><A HREF="#credits">The Gnumex archive: development and credits</A>
+<LI><A HREF="#mingw_install">Installing Mingw</A>
+<LI><A HREF="#cygwin_install">Installing Cygwin</A>
+<UL>
+<LI><A HREF="#cygwin_install_1">Step 1: Install Cygwin</A>
+<LI><A HREF="#cygwin_install_fix">Step 2: fix some little installation problems</A>
+</UL>
+<LI><A HREF="#install_gnumex">For Mingw, or Cygwin: installing the gnumex archive</A>
+<UL>
+<LI><A HREF="#dlltool_aside">A little technical aside</A>
+</UL>
+<LI><A HREF="#matlab_steps">Set up Matlab for gcc mex file compilation</A>
+<LI><A HREF="#test_compile">A test mex file compilation</A>
+<LI><A HREF="#mex_optimize">Optimizing gcc compilation for mex files</A>
+<LI><A HREF="#fortran_compile">Fortran compilation</A>
+<LI><A HREF="#lapack_link">Linking to LAPACK/BLAS libraries</A>
+<LI><A HREF="#autotools">Using autotools with gnumex</A>
+<LI><A HREF="#gdb">Debugging mex files with gdb</A>
+<LI><A HREF="#problems">Current problems</A>
+<LI><A HREF="#tip_path">Tip 1: Put the Matlab bin directory on your path</A>
+<LI><A HREF="#bash_mex">Tip 2: If using Cygwin: Set up bash to call mex.bat
+smoothly</A>
+<LI><A HREF="#fast_mex">Tip 3: Faster mex file compiling</A>
+<LI><A HREF="#command_options">Tip 4: setting options from the command line</A>
+<LI><A HREF="#help">Help</A>
+<LI><A HREF="#finally">And finally</A>
+</UL>
+</UL>
+<!-- table of contents end -->
+
+<H1><A NAME="gnumex_top"></A>Compiling Matlab mex files with gcc for Windows</H1>
+
+This page is designed to explain how to install the GNU compiler
+compiler collection (gcc) for Windows, to compile matlab mex and other
+files.  It was originally written for the b20.1 release. The current
+release (as of August 2004) is cygwin 1.5.10-3.
+
+<p>There are two attractions to using gcc for Windows over other
+compilers. The first is that gcc is free. The second is that gcc,
+particularly Cygwin gcc (see below), can emulate Unix functionality
+within Windows, so you may be able to use the same c or c++ mex source
+files on Unix and Windows.  The last is that you may also be
+able to use gcc to compile Fortran programs.</p>
+
+<h2><A NAME="mingw_cygwin"></A>Mingw and Cygwin</h2>
+
+<p>There are two main options when using gcc with Windows: <a href="http://www.mingw.org/">MINimalist Gcc for Windows (Mingw)</a>,
+and the gcc that comes as part of the <a href="http://sources.redhat.com/cygwin">Cygwin package</a>.  The
+differences between these two, and some other versions of gcc for
+Windows, are explained in a page on <a href="http://www.mingw.org/x86-win32-ports.shtml"> gcc versions for
+Windows</a>.  In brief, the Mingw approach is to simply link to the
+Microsoft run-time libararies, which results in fast executables, but
+a restricted compatibility with gcc for Unix.  In contrast, the Cygwin
+gcc compiles link to a dynamic link library, cygwin1.dll, which
+provides a Unix style API that allows access to many more Unix
+routines than are available with the Microsoft libraries. See the <a href="http://sources.redhat.com/cygwin/faq/faq_toc.html">Cygwin
+FAQ</a> for more on the Cygwin API and how the Unix emulation
+works. Cygwin gcc executables tend to be a little slower, and require
+that the Cygwin1.dll file be on the Windows PATH.  Cygwin comes
+complete with many useful Unix tools, such as the bash shell, and all
+the usual Unix utilities.</p>
+
+As an added complication, you can also do Mingw compiles using the
+Cygwin tools, i.e. use the Cygwin tools to link to the Microsoft
+libraries. This is achieved by passing a flag to the Cygwin gcc, <a href="http://www.xraylith.wisc.edu/%7Ekhan/software/gnu-win32/mno-cygwin-howto.txt">-mno-cygwin</a>.
+I refer to this as Cygwin/mingw compiling. <a name="#cyg-min-mess">There are some problems with this
+option</a>. Although the gnumex utilities here do support Cygwin-mingw
+compiles, I would strongly suggest using Mingw instead. There have
+been rumblings on the Cygwin mailing list about discontinuation for
+-mno-cygwin support, but it is still being updated.
+
+<h2><A NAME="credits"></A>The Gnumex archive: development and credits</h2>
+
+<p>This page introduces an archive of routines that I have packaged,
+called "gnumex".  You can find the latest version via the <A
+href="https://sourceforge.net/projects/gnumex">gnumex project
+SourceForge page</A>. The routines are released under the GNU general
+public licence.  Gnumex allows you to set up the Windows
+versions of gcc to compile mex files. In the archive are some perl
+scripts, a Matlab ui setup routine and a couple of supporting mex file
+dlls, with source.  Original scripts and some working mex option .bat
+files were written by Ton van Overbeek. Lars Gregerson and Mark
+Levedahl have offered helpful modifications. Christian Merkwirth
+helped with getting C++ compiles working. Thanks also to Mumit Khan
+for helpful discussion on dll issues. The original scripts first
+appeared on the Cygnus (now Cygwin) mailing list. </p>
+
+<h2><A NAME="mingw_install"></A>Installing Mingw</h2>
+
+<p>This is exceptionally easy; have a look first at the <a
+href="http://www.mingw.org/download.shtml">Mingw dowload page</a>. In
+essence it is more or less as easy as just downloading the Mingw
+executable MingW installer available via links from the <a
+href="http://www.mingw.org/">Mingw site</a>, and unpacking into a
+suitable directory, perhaps 'c:\mingw'.  The current version at time
+of writing is MingW-3.1.0-1.exe.
+
+<h2><A NAME="cygwin_install"></A>Installing Cygwin</h2>
+
+<em>Warning: cygwin mex files compiled with the current cygwin gcc (3.3)
+cause matlab to crash.  </em>You will need to get hold of an earlier (3.2)
+version of cygwin gcc for this to work.
+
+<h3><A NAME="cygwin_install_1"></A>Step 1: Install Cygwin</h3>
+
+The version that you want is available via the <a
+href="http://ptolemy.eecs.berkeley.edu/ptolemyII/ptII4.0/cygwin.htm">Ptolemy
+cywgin page</a>.  Get the <a
+href="http://ptolemy.eecs.berkeley.edu/ptolemyII/ptII4.0/cygwinDevel.exe">CygwinDevel.exe</a>
+version from there, and install as described in that page.
+
+<h3><A NAME="cygwin_install_fix"></A>Step 2: fix some little installation problems</h3>
+
+There are two little gotchas for Cygwin installations that come up
+with windows 9x. The first is an "Out of environment space" error that
+can occur when running the bash shell via the cygwin.bat file. If you
+get this, you can get round it using one of two methods. The first is
+to increase the environment space for any shell: edit your config.sys
+file, adding a line like "shell=C:\command.com /e:4096 /p" (if C: is
+your system drive letter). The second is to edit the memory properties
+of the cygwin.bat file, which starts up Cygwin bash. Right click on
+the cygwin.bat file name in Windows Explorer, choose properties from
+the menu, and the Memory tab in the dialog box. Change the Initial
+Environment value to 4096K. The second issue that may come up with
+Windows 9x is that you may have problems running cygwin.bat if you
+have spaces in the filenames in your PATH variable; on my system this
+gave me an error message like "Too many parameters; Bad command or
+file name". If you have this problem then try putting inverted commas
+round the right hand side of the PATH= line in cygwin.bat (but don't
+do this in NT...).  </p>
+
+<p><a name="dllpath"></a>Also consider putting cygwin1.dll somewhere
+on your windows path, so your mex files can run outside Matlab
+sessions started in Cygwin bash.  Be careful if you copy the
+cygwin1.dll to somewhere outside its rightful home in the Cygwin
+distribution; you will at very least have to be careful to update this
+version of the cygwin1.dll file each time you update the Cygwin
+distribution, otherwise you will get odd effects from the clashes of
+the old dll with the new version.
+
+</p><p>You should now have a working installation of Cygwin and its very
+useful version of the Bourne Again Shell, bash. </p>
+
+<h2><A NAME="install_gnumex"></A>For Mingw, or Cygwin: installing the gnumex archive</h2>
+
+<p>Obtain the gnumex archive via the <A
+href="https://sourceforge.net/projects/gnumex">gnumex project
+SourceForge page</A>.  Unpack the archive (using tar, winzip, whatever) into a
+directory of your choice - say c:\gnumex. You now have: a Matlab
+install routine, gnumex.m; a couple of mex file supporting routines
+(shortpath.dll, uigetpath.dll); a hacked version of the windows dll
+utility, dlltool, and some perl scripts. The source for the mex files
+are in the the src subdirectory. For convenience, you might consider
+putting the directory containing gnumex.m and the dlls onto your
+Matlab path.
+
+</p><h3><A NAME="dlltool_aside"></A>A little technical aside</h3>
+
+<p>The hacked version of dlltool is to allow linking of fortran
+routines to the matlab 5 fortran libraries - see <a href="http://sources.redhat.com/ml/binutils/2001-12/msg00471.html">a
+general description of the problem</a>.  The patch applied to create
+the hacked version of dlltool is also included.  The patch is to the
+<a href="binutils-2.11.92-20011113-src.tar.bz2">binutils
+2.11.92 source</a>.
+
+</p><h2><A NAME="matlab_steps"></A>Set up Matlab for gcc mex file compilation</h2>
+
+<p>The gnumex script will write a bat file that configures the mex
+compiling routine to use gcc. When you run mex from Matlab, or from
+the command line, you run the file mex.bat in the Matlab bin
+directory. This is a strange combination of bat file and perl script,
+that reads key variables out of another bat file to get compile and
+link options. This options bat file is by default called mexopts.bat,
+and may well reside in your Matlab bin directory. You can tell which
+options file mex is using by running "mex -v" from the Matlab
+prompt. </p>
+
+<p>To run the gnumex script, start Matlab, change directory to the
+gnumex directory you selected earlier (e.g c:\gnumex above). Then type
+"gnumex" from the Matlab prompt. A Matlab figure window comes up, with
+a variety of options, which should look a little like this:
+</p><p>
+
+</p><center><img src="gnumex.png"></center>
+
+<p>
+
+The top edit box needs to contain the path of the Cygwin directory -
+here c:\cygwin. Set this to point to your installation of Cygwin if
+you have it.  The next edit box should point to the root directory of
+MingW - here c:\mingw.  Set this if you have installed MingW.  The
+"Path to gnumex file utilities" edit box sets the directory with the
+gnumex files (default - the current working directory). There is also
+an edit box for the name of the options bat file to be created. You
+might want to leave this as the default, which is Matlab's default
+mexopts location for your system or account.</p>
+
+<p>Note also there is a list box for selecting Mingw or
+Cygwin, or the hybrid Cygwin/mingw compiling/linking:
+</p><p>
+
+</p><center><img src="linkopts.png"></center>
+
+<p> If you want to use Cygwin compiles, choose the Cygwin option in
+this list box, and make sure the top (Cygwin root path) box is set to
+your Cygwin root directory.  If you want to use Mingw, select the
+Mingw option in this list box, and check you have the right "Mingw
+root path" set.  Choose the Cygwin/mingw option for Cygwin/mingw
+hybrid compiles; this option uses the "Cygwin root path" directory.
+
+</p><p> A second list box selects whether the opt file is for creating
+mex files (dlls), or standalone Matlab engine exe files. The default
+is Mex dll. The third box specifies the language for the compile
+(C/C++ or fortran).  There is also a list box selecting Safe or Quick
+compiles; this has an associated precompiled library directory edit
+box. For the moment, leave the list box at it's default value.  See <a
+href="#Tip3">Tip 3</a> for more details on Quick compiles.  Lastly,
+you have the option to compile for a the various pentium chips; see
+the <a href="#optim_mex">section on optimized compiles</a> for more
+details; for the moment leave this option as "All".
+
+</p><p>After you have set the directories correctly, you may want to
+save this configuration, using the File-Save config menu option. When
+it starts up, the gnumex script will look for a default configuration
+file called gnumexcfg.mat in the same directory as the gnumex.m file,
+so you could save the file in this directory to get these same options
+on startup.
+
+</p><p>When the directories are as you wish, click on the Make opts button
+at the bottom of the figure, or choose the Make opts file option from
+the File menu of the figure. The script creates the bat file you
+specified.
+
+</p><h2><A NAME="test_compile"></A>A test mex file compilation</h2>
+
+<p>The next thing to do is try a test compile.  Before trying, a quick
+note about mex files compiled using Cygwin linking.  If you run a mex
+file created with Cygwin, then the mex file (which will be a .dll)
+will need to be able to call functions in the cygwin1.dll, so this
+will need to be somewhere on the Windows path when the mex file
+runs. If it isn't, then when you run the mex file, you will get an
+error message like:
+
+</p><pre>Error loading cygwin1.dll from c:\gnumex\yprime.dll.
+Error loading c:\gnumex\yprime.dll.
+??? Invalid MEX-file
+</pre>
+
+So, if you are using Cygwin compiles, either arrange to put the
+cygwin1.dll on the standard path (see <a href="#dllpath">above</a>),
+or run matlab from a Cygnus bash shell, to achieve the same effect.
+
+<p>You should now be able to try a mex file compile. At the Matlab
+&gt;&gt; prompt, type
+
+</p><pre>mex -f mexopts.bat c:\progra~1\matlab\extern\examples\mex\yprime.c
+</pre>
+
+Where "c:\progra~1\matlab" is your Matlab root directory, and
+mexopts.bat is the name of the file you have just created in the
+current working directory. <p></p>
+
+<p>Type "which yprime" to check that you do indeed have a new
+"yprime.dll" in your current directory. Check the function by calling
+it with "yprime(1, 1:4)".  You should get: </p>
+
+<pre>ans =
+
+2.0000 8.9685 4.0000 -1.0947 </pre>
+
+<p>With luck you are now up and running. If you want to make gcc your
+default mex compiler, copy the options file you have just created to
+overwrite the current default options file (see which this is with
+"mex -v"). If there is no default file listed by "mex -v", copy the
+file to mexopts.bat in the Matlab bin directory. 
+
+</p><p>For engine / mat file compiles, instead of mex file compiles, just
+create an opt file with "Engine exe" selected in the the "Generate mex
+dll or engine exe?"  list box:
+</p><p>
+
+</p><center><img src="typeopts.png"></center>
+
+<p>
+
+You might want to use a different file name for the engine opt file -
+say engopts.bat.
+
+</p><p>Below are a couple of optional extra tips to configure your
+system. </p>
+
+<h2><A NAME="mex_optimize"></A>Optimizing gcc compilation for mex files</h2>
+
+(With many thanks to Alberto Martinez). There are a large number of
+different flags which can be used with gcc to optimize code for speed;
+these are described in the <a href="http://gcc.gnu.org/onlinedocs/gcc-2.95.3/gcc.html">gcc
+documentation</a>.  The optimization options specified by default in
+the gnumex package are the following:
+
+<pre>-O3 -mcpu=pentium -malign-double -fno-exceptions
+</pre>
+
+which are all relatively benign.  However, you may well get
+considerably greater speed improvements by adding the following flag:
+
+<pre>-ffast-math
+</pre>
+
+This option sacrifices some input checking for faster floating point
+maths - and is in fact part of the standard (-O2) optimization for
+Microsoft Visual C++.  However, to quote from the gcc documenatation:
+"This option allows GCC to violate some ANSI or IEEE rules and/or
+specifications in the interest of optimizing code for speed. For
+example, it allows the compiler to assume arguments to the sqrt
+function are non-negative numbers and that no floating-point values
+are NaNs. This option should never be turned on by any `-O' option
+since it can result in incorrect output for programs which depend on
+an exact implementation of IEEE or ANSI rules/specifications for math
+functions."
+
+<p>Note also that you may get major gains in speed from optimizing for
+a particular processor.  You can use the "Processor to
+compile for" list box in the gnumex window to choose other processors
+to compile for.  Note that the default "All" option here will work for
+any cpu (after a 486), but - for example - the pentium 3 option will
+only run on a pentium 3 or higher.
+
+<p>The pentium 4 has particularly fast floating point instructions
+which can be enabled with the "Pentium 4" option in the
+list box.  This has the advantage of avoiding a very nasty
+slowdown for the Pentium 4 when it encounters NaN values.  See <a
+href="http://www.mrc-cbu.cam.ac.uk/Imaging/spm_intel_tune.html">a
+pentium 4 compilation</a> page for more details.
+
+</p><h2><A NAME="fortran_compile"></A>Fortran compilation</h2>
+
+The GNU compiler collection includes a Fortran compiler, g77.  g77
+seems to be able to compile the example mex and engine files for
+matlab 5.3, 6.1 and 6.3; I would be very glad to hear of any problems
+with other versions of matlab, or Fortran files.  To try the Fortran
+compilation, select the Fortran option in the Gnumex window:
+
+<p>
+
+</p><center><img src="langopts.png"></center>
+
+<p>
+
+
+and create a new opts.bat file.  Then try:
+
+</p><pre>mex -f mexopts.bat c:\progra~1\matlab\extern\examples\mex\yprimefg.f c:\progra~1\matlab\extern\examples\mex\yprimef.f 
+</pre>
+
+Followed by "yprimefg(1, 1:4)" at the matlab prompt.  You should get
+the same answer as above.
+
+<h2><A NAME="lapack_link"></A>Linking to LAPACK/BLAS libraries</h2>
+
+Mex files doing a lot of matrix algebra are likely to benefit from
+linking to the highly optimized <a href="http://www.netlib.org/blas/">BLAS</a> and <a href="http://www.netlib.org/lapack/">LAPACK</a> routines. In matlab
+6.0 and higher, these are provided using <a href="http://math-atlas.sourceforge.net/">ATLAS</a> libraries.  Linking
+steps are described in a <a href="http://www.mathworks.com/access/helpdesk/help/techdoc/matlab_external/ch04cr16.shtml">Mathworks BLAS/LAPACK help page</a>.  For gcc, you simply
+follow the instructions on that page, but use the Microsoft MSVC++
+import libraries to link to; e.g, from the matlab prompt:
+
+<pre>mex myfile.c c:/matlab6p5/extern/lib/win32/microsoft/msvc60/libmwlapack.lib
+</pre>
+
+You may on occasion want to link a c file to a fortran object file,
+which then links to the ATLAS routines; in this case, compile the
+fortran file with the "-fno-underscoring" flag; e.g - outside matlab:
+
+<pre>g77 -fno-underscoring -c my_fortran_file.f  
+</pre>
+
+Then, inside matlab:
+
+<pre>mex myfile.c my_fortran_file.o c:/matlab6p5/extern/lib/win32/microsoft/msvc60/libmwlapack.lib
+</pre>
+
+<h2><A NAME="autotools"></A>Using autotools with gnumex</h2>
+
+Christopher Hulbert has kindly written a page on using <a href="autotools">GNU autotools
+with gnumex</a>.  GNU autotools (autoconf and automake) allow you to
+script platform independent compilation which is often useful for
+larger projects. 
+
+<h2><A NAME="gdb"></A>Debugging mex files with gdb</h2>
+
+Please see this helpful <a href="gdb.txt">text file by Mark
+Levedahl</a>.
+
+<h2><A NAME="problems"></A>Current problems</h2>
+
+The latest version of gnumex outputs a warning when compiling engine
+(exe) files with cygwin; this looks something like:
+
+<pre>
+/usr/lib/gcc-lib/i686-pc-cygwin/3.3.1/../../../../i686-pc-cygwin/bin/ld: warning: cannot find entry symbol _WinMainCRTStartup; defaulting to 00401000
+</pre>
+
+It <a
+href="http://sources.redhat.com/ml/cygwin/2003-09/msg01083.html">may
+be harmless</a>; I would be pleased to hear from anyone with feedback
+on this.
+
+<p>A second problem is that mex dll files compiled with cygwin can
+crash matlab if reloaded.  You can reproduce this problem thus:
+
+<pre>
+>> yprime
+>> clear yprime
+>> yprime
+</pre>
+
+where yprime.dll has been compiled with cygwin.dll linking.  This
+appears to be a <a href="http://www.cygwin.com/ml/cygwin/2003-06/msg01399.html">problem with dynamic cygwin.dll loading and unloading</a>.
+
+<h2><A NAME="tip_path"></A>Tip 1: Put the Matlab bin directory on your path</h2>
+
+<p>To call the mex scripts, or start Matlab, from a Cygwin bash or 9x/NT
+console window, you will need to put the Matlab bin directory on your
+path. If you will just want to call mex from the Cygwin bash shell,
+then you can add the matlab \bin directory path to your cygwin.bat
+startup file, which is in your Cygwin directory (default
+c:\Cygwin). Edit the line: </p>
+
+<p>SET PATH=c:\Cygwin\bin;%PATH% </p>
+
+<p>to read: </p>
+
+<p>SET PATH=c:\Cygwin\bin;c:\progra~1\matlab\bin;%PATH% </p>
+
+<p>where c:\progra~1\matlab is your Matlab root directory. If you want
+to call Matlab or mex from the NT/9x console prompt, as well as bash,
+then add the c:\progra~1\matlab\bin (or similar) to the PATH statement
+in your autoexec.bat file (for Windows 9x), or add it to your path
+variable using the Control panel -&gt; System -&gt; Environment tab in
+NT. In NT you might set the variable PATH in your User Variables
+settings to; </p>
+
+<p>c:\progra~1\matlab\bin;%PATH% </p>
+
+<h2><A NAME="bash_mex"></A>Tip 2: If using Cygwin: Set up bash to call mex.bat
+smoothly</h2>
+
+<p>In its default configuration, the Cygwin bash shell will not
+recognize "mex" as being a command. To run the mex compiler from bash
+you will need to type "mex.bat &lt;file.c&gt;", where &lt;file.c&gt;
+is the file you want to compile. The ".bat" extension tells bash that
+it should run a DOS shell to start up mex.bat.  You can automate this
+by setting an alias within bash. To do this automatically you need to
+get bash to read a startup configuration file when it runs. If you do
+not already have one, then create a file called .bashrc, and into it
+put the following line:
+
+</p><pre>alias mex="mex.bat"</pre>
+
+To make bash read this startup file:
+
+<p></p>
+
+<ol>
+
+  <li>set the environment variable "HOME" to some directory, such as
+      "c:\home\myname", where you want to store your startup file. Do this
+      using the
+      Control panel -&gt; System -&gt; Environment tab in NT, or by
+      editing your
+      autoexec.bat file in Windows 9x. 
+
+  </li><li>Copy the .bashrc file to the directory named in HOME. </li>
+
+</ol>
+
+<p>Now when you run bash, it should read this file and set the alias
+for "mex".  Don't forget to use Unix pathnames when calling mex from
+bash, e.g. "mex c:/progra~1/matlab/extern/examples/mex/yprime.c" </p>
+
+<h2><A NAME="fast_mex"></A>Tip 3: Faster mex file compiling</h2>
+
+<p>As the scripts are set up by default in versions of matlab before
+version 6, the mex file compile routines can be slow. The slowness was
+because the scripts emulate the behaviour of the mex file compilation
+with other compilers, by re-creating libraries from the matlab.exe and
+dll files, for the mex or engine .exe files to link against. These
+libraries are created every time a mex file is linked, and this
+process can be slow. If you are only running one compile at a time,
+the library creation is usually not necessary, as the libraries are
+the same for each compilation, as long as the matlab.exe main
+executable and its .dlls are the same. Of course they are always the
+same unless you have updated your Matlab installation, so a shortcut
+is to compile these libraries once only, and store them for all
+subsequent mex file compiles. This is how library linking is done for
+matlab 6; if you have this version, the quick compile option should be
+the default. If you want use quick compilation, then follow the
+instructions below: </p>
+
+<ol>
+
+  <li>Make a directory to store the compiled libraries, say 
+  c:\gnumex\precomp. 
+
+  </li><li>Run the gnumex.m program, and choose the Quick option from the
+      Compile type list box:
+      <p>
+
+      </p><center><img src="libopts.png"></center>
+      
+      <p>
+
+      Set the precompiled directory to, say,
+      c:\gnumex\precomp. Save the opts bat file with the Make opts
+      button, of menu option. This will create the appropriate opts
+bat file, and run a script
+  that creates the precompiled libraries in the specified
+directory. Mex file
+  compiles with this opts bat file should be rather faster than with
+  the safer standard mode.
+
+  </p></li><li>If for any reason you update your Matlab installation with a new
+  matlab.exe or dlls, then don't forget to rerun the "gnumex" bat creation 
+  program, to update the libraries. </li>
+
+</ol>
+
+<p>With this setup, you may run into difficulties with more than one
+Matlab mex compilation process running at the same time, in which case
+you can return to safe mode. </p>
+
+<h2><A NAME="command_options"></A>Tip 4: setting options from the command line</h2>
+
+Thus far I have described the gnumex GUI.  You can also use gnumex
+from the command line.  You should first make sure you have set the
+various directories correctly, and have saved the configuration, as
+described above.  After this, you can very quickly change your
+settings from the command line.  Type:
+
+<pre>
+>> gnumex usage
+</pre>
+
+for a list of options.  Just as a taster, you can use:
+
+<pre>
+>> gnumex mingw
+</pre>
+
+to set the default compiles to use gnumex with mingw compiles;
+
+<pre>
+>> gnumex cygwin eng
+</pre>
+
+to set up cygwin engine (exe) file compilation, and
+
+<pre>
+>> gnumex no-cygwin eng fortran optfile=test.bat
+</pre>
+
+to write an options file "test.bat" in the current directory, which
+has settings for making fortran engine files using cygwin/mingw
+compilation.
+
+<h2><A NAME="help"></A>Help</h2>
+
+If you have a problem with the installation of this package, please
+first check you have followed the instructions above carefully.  If
+you are still in difficulty, consider mailing the gnumex mailing list;
+list archives and instructions for posting are available via the <a
+href="https://lists.sourceforge.net/lists/listinfo/gnumex-users">gnumex
+users mailing list</a> page. There is also a <a
+href="http://sourceforge.net/mailarchive/forum.php?forum=gnumex-users">gnumex
+mailing list archive</a>
+
+If you want support with an installation problem, it will be useful if
+you can send details, including the output of
+
+<pre>mex -v -f mexopts.bat c:\progra~1\matlab\extern\examples\mex\yprime.c
+</pre>
+
+(see above), and a copy of the options file created by the gnumex
+routines - here "mexopts.bat" - all zipped up please.  We also need to
+know your version of matlab, which version of Mingw/Cygwin you are
+using, and the Windows version.
+
+<h2><A NAME="finally"></A>And finally</h2>
+
+<p>I hope this page has been useful. Please let me know if you have
+any comments on this page, or any problems with the installation, and
+I'll try and update these instructions accordingly. </p>
+
+<p>Happy mexxing. </p>
+
+<hr>
+
+<p>Many thanks to: </p>
+
+<p>Ton Van Overbeek, who wrote the original scripts and .bat files and to: 
+
+<br>Mark Levedahl
+
+<br>Lars Gregerson
+
+<br>Christian Merkwirth
+
+<br>and to: 
+
+<br>Mumit Khan, for helpful discussion, and his contributions to gcc,
+mingw, dllwrap, which made the whole thing work.
+
+</p><p>
+
+</p><p>Matthew Brett 3/5/2000, 10/7/2001 
+
+</p>
+
+
+<a href="http://sourceforge.net"><img
+src="http://sourceforge.net/sflogo.php?group_id=76381&amp;type=2"
+width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+
+<P>
+
+<!-- hhmts start -->
+Last Refreshed: Fri Aug 12 14:54:38 PDT 2005
+<!-- hhmts end -->
+
+</P>
+
+</BODY></HTML>
+
+ 
