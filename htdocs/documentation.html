@@ -5,6 +5,8 @@
 
 
 
+
+
   
       <meta http-equiv="content-type" content="text/html; charset=US-ASCII" />
       <meta name="date" content="2013-11-09 01:12:12 -0600" />
@@ -28,6 +30,7 @@
  <a href="index.html" class="menu">Home</a> &nbsp;&nbsp;&nbsp;
  <a href="contributors.html" class="menu">Contributors</a> &nbsp;&nbsp;&nbsp;
  <a href="documentation.html" class="menu">Documentation</a> &nbsp;&nbsp;&nbsp;
+ <a href="http://sourceforge.net/p/gnumex/files/" class="menu">Download</a> &nbsp;&nbsp;&nbsp;
  <a href="FAQ.html" class="menu">FAQ</a> &nbsp;&nbsp;&nbsp;
  <a href="http://sourceforge.net/p/gnumex/bugs" class="menu">Bugs</a> &nbsp;&nbsp;&nbsp;
  <a href="http://sourceforge.net/p/gnumex/mailman" class="menu">Mailing Lists</a> &nbsp;&nbsp;&nbsp;
@@ -48,10 +51,11 @@
 <br />
 <br />
 
-<h3>Preface</h3>
+<h3>Preface and Background<br />
+</h3>
 <p>A knowledge of MATLAB is necessary.&nbsp; A knowledge of simple
 compilation of C, C++, or Fortran is helpful.&nbsp; Also, if you have
-worked with Cygwin, MinGW, MinGW-w32, or MinGW-w64 that is helpful.<br />
+worked with MinGW, MinGW-w32, or MinGW-w64 that is helpful.<br />
 </p>
 
 <p>The main attractions for using GCC for Windows over other compilers is the following:</p>
@@ -74,65 +78,66 @@ compatibility.&nbsp; Cygwin1.dll is required on the PATH when calling
 your executable or library. See the <a href="http://sources.redhat.com/cygwin/faq/faq_toc.html">Cygwin FAQ</a> for more on the Cygwin API and how the Unix emulation works.&nbsp; <br />
 <br />
 To make matters more complicated, MinGW-w64 is a different project than
-MinGW.&nbsp; The MinGW-w64 project has support for both 32 bit and 64
-compiling on Windows but MinGW only supports 32 bit. MinGW-w64 forked
-the MinGW and added 64 bit support.&nbsp; You can use either with
-Gnumex.&nbsp; <br />
+MinGW.&nbsp;  MinGW-w64 forked
+the MinGW code and added 64 bit support.&nbsp; However, the MinGW-w64 project has support for both 32 bit and 64
+compiling on Windows but MinGW only supports 32 bit. <br />
 <br />
-As an added complication, you can also do Mingw compiles using the
+As an added complication, you can also do MinGW compiles using the
 Cygwin tools, i.e. use the Cygwin tools to link to the Microsoft
 libraries. This is achieved by passing a flag to the Cygwin gcc,
 -mno-cygwin. This is refered to as Cygwin/mingw compiling. There are
-some problems with this option. Although the gnumex utilities here do
-support Cygwin-mingw compiles, I would strongly suggest using Mingw
-instead. There have been rumblings on the Cygwin mailing list about
-discontinuation for -mno-cygwin support, but it is still being updated.<br />
-<br />
-Note that Cygwin does not play well with MATLAB.&nbsp; If you use
-Cygwin without -mno-cygwin flag, only GCC 3.2 or below is
-supported.&nbsp; The -mno-cygwin flag is deprecated.&nbsp; MinGW or
-MinGW-w64 is recommended.&nbsp;&nbsp; &nbsp;
- <h3>Introduction</h3>
-<p>content</p>
-<h3>Installation and Setup<br />
-</h3>
-<p>Configuring Gnumex requires either Cygwin or MinGW to be installed 1st.&nbsp; Note the recommend compilers are MinGW or MinGW-w64 (both 32 or 64 bit).&nbsp; Cygwin<br />
+some problems with this option. The old gnumex utilities do
+support Cygwin-mingw compiles, however it is strongly suggested to use MinGW
+instead. <br />
+<br />Note that Cygwin does not play well with MATLAB.&nbsp; If you use
+Cygwin without -mno-cygwin flag, only GCC 3.2 or below works.&nbsp; The
+-mno-cygwin flag is deprecated.&nbsp; Reports of Cygwin crashing MATLAB
+are common on the mailing list.&nbsp; Therefore, MinGW or
+MinGW-w64 is recommended.&nbsp; Support for cygwin updates will no longer be made
+after Gnumex 2.05.&nbsp; If you need Gnumex to use Cygwin, then use an
+older version of Gnumex.<br />
+<h4>Prerequisite: Installing MinGW or MinGW-w64</h4>
+<p>Configuring Gnumex requires either MinGW or MinGW-w64 to be installed first.&nbsp; Cygwin is
+no longer supported.&nbsp; No further updates will be made for Cygwin.<br />
 </p>
-<h4>Installing MinGW or MinGW-w64</h4>
+
 <p>There are muliple flavors of MinGW and MinGW-w64.&nbsp; Two different links to different MinGW-w64 projects are in the <a href="links.html">Links</a>
 section as examples that contributors have used.&nbsp; If you plan to
 work with 32 bit MATLAB, get the 32 bit compiler.&nbsp; For 64 bit
-MATLAB, get a 64 bit compiler.&nbsp; Note that TDM-GCC installs both
-the 64-bit and 32-bit in the same directory;&nbsp; do not attempt this
-with other versions of MinGW-w64.<br />
+MATLAB, get a 64 bit compiler.&nbsp; <br />
 </p>
-<p>&nbsp; As an example, here is instructions for the compiler from <a href="http://www.equation.com/servlet/equation.cmd?fa=fortran">equations.com</a>:</p>
+
+<p>&nbsp; As an example, here is instructions for the compiler from TDM-GCC:</p>
 <ol>
-  <li>Download gcc-4.7.3-64.exe from <a href="http://www.equation.com/servlet/equation.cmd?fa=fortran">here</a>.</li>
-  <li>Run
-gcc-4.7.3-64.exe and follow the instructions.&nbsp; Install to the
-default location of C:\gcc . Please note that the installer modifies
+  
+  <ol>
+    <ol>
+      <li>Download TDM-GCC package from <a href="http://tdm-gcc.tdragon.net/">here</a>.&nbsp; If you have 32bit MATLAB, get the 32 bit TDM-GCC package.&nbsp; If you have 64bit MATLAB get the 64bit version.<br />
+      </li>
+      <li>Run the installer and follow the instructions.&nbsp; Install to the
+default location of TDM-GCC-32 or TDM-GCC-64. Please note that the installer modifies
 the PATH environmental variable (if you don't know what this is, google
-"windows environmental variable").<br />
-  </li>
-  <li>Optionally,
-create the environmental variable "MINGW_HOME" pointed to the install
-directory C:\gcc .&nbsp; You do this by going to Control
-Panel--&gt;System--&gt;Advanced System Settings--&gt;Environmental
-Variables as shown below.<img style="width: 801px; height: 580px;" alt="MINGW Enviromental Variable Set" src="MINGW_Set.jpg" /></li></ol>
-<h4>Installing Cygwin or Cygwin64</h4>
-<ol>
-  <li>The version that you want is available via the Ptolemy cywgin
-page. Get the CygwinDevel.exe version from there, and install as
-described in that page.<br />
-  </li>
-</ol>
-<br />
-<ol>
+"windows environmental variable").</li>
+      <li>That's it.&nbsp; Nothing to it.<br />
+      </li>
+    </ol>
+  </ol>
+
+  
+  </ol><ol>
 
 </ol>
 
+<h3>Installing and Setting Up Gnumex</h3>
+<ol>
+  <ol>
+    <li>&nbsp;Obtain the latest version of Gnumex from the Download section.</li>
+    <li><br />
+    </li>
+  </ol>
+</ol>
 <br />
+
 
 <h3>Usage<br />
 </h3>
