@@ -1,14 +1,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head>  
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head>
+  
   <meta http-equiv="content-type" content="text/html; charset=US-ASCII" />
   <meta name="date" content="2013-11-09 01:12:12 -0600" />
   <meta name="author" content="Jason Nicholson" />
   <meta name="description" content="Compile matlab mex files with gcc on Windows Platforms" />
-  <meta name="keywords" content="Gnumex" lang="en" />
-  <title>Gnumex - Documentation</title>
-  <link rel="stylesheet" type="text/css" href="gnumex.css" />
-</head>
-<body>
+  <meta name="keywords" content="Gnumex" lang="en" /><title>Gnumex - Documentation</title>
+  
+  <link rel="stylesheet" type="text/css" href="gnumex.css" /></head><body>
 <div id="top-menu" class="menu">
 <table class="menu" summary="Menus">
   <tbody>
@@ -123,17 +122,22 @@ the PATH environmental variable (if you don't know what this is, google
     <li>Obtain the latest version of Gnumex from the <a href="https://sourceforge.net/projects/gnumex/files/">Download</a>
 section.</li>
     <li>Unpack the archive (using tar, winzip, whatever) into a
-directory of your choice - say c:\gnumex. You now have: a Matlab
+directory of your choice - say ...\Documents\gnumex. You now have: a Matlab
 install routine, gnumex.m; a couple of mex file supporting routines
 (shortpath.dll, uigetpath.dll); a hacked version of the windows dll
-utility, dlltool (click to see issue with dlltool), and some perl
+utility, dlltool (<a href="dlltool.html">click to see issue with dlltool</a>), and some perl
 scripts.</li>
-    <li>To run the gnumex script, start Matlab, change directory to the
-gnumex directory you selected earlier (e.g c:\gnumex above). Then type
-"gnumex" from the Matlab prompt. A Matlab figure window comes up, with
+    <li>To
+setup Gnumex, run the gnumex script from the install directory (e.g
+...\Documents\gnumex).&nbsp; A Matlab figure window comes up, with
 a variety of options, which should look a little like this:<br />
       <img style="width: 669px; height: 578px;" alt="Gnumex dialog" title="Gnumex MATLAB dialog" src="gnumex.png" /></li>
-    <li>The 1st edit box should point to the root directory of MingW.
+    <li>Fill
+in the dialog window and then click "Make options file."&nbsp; Gnumex
+will use all of the filled information to generate a newbatch file that Matlab can use to mex code. </li></ol><span class="option"></span>f<br />
+<br />
+<ol>
+  <li>The 1st edit box should point to the root directory of MingW.
 Set this if you have installed MingW. The "Path to gnumex file
 utilities" edit box sets the directory with the gnumex files (default -
 the current working directory). There is also an edit box for the name
@@ -141,15 +145,55 @@ of the options bat file to be created. You might want to leave this as
 the default, which is Matlab's default mexopts location for your system
 or account.<br /><br />
     </li>
-    <li>Select MinGW in the "Environment/linking type" box.&nbsp; A
+  <li>Select MinGW in the "Environment/linking type" box.&nbsp; A
 second list box selects whether the opt file is for creating mex files
 (dlls), or standalone Matlab engine exe files. The default is Mex dll.
 The third box specifies the language for the compile (C/C++ or
 fortran). There is also a list box selecting Safe or Quick compiles;
 this has an associated precompiled library directory edit box. For the
-moment, leave the list box at it's default value.&nbsp; <br /><br /><br />
+moment, leave the list box at it's default value.&nbsp; <br />
+
     </li>
 </ol>
+<ul>
+  <li>MinGW root directory (maybe blank): This should point to the base directory of MinGW or MinGW-w64. For example, C:\TDM-GCC-64</li>
+  <li>Cygwin root directory (or blank): This is the base folder of Cygwin.&nbsp; Often C:\cygwin .<br />
+  </li>
+  <li>Path to g95.exe (or blank):&nbsp;&nbsp; This is the folder that g95.exe is located.&nbsp; For instance, C:\TDM-GCC-64\bin .<br />
+  </li>
+  <li>Path to gfortran.exe (or blank): This is the folder containing gfortran.&nbsp; For instance, C:\TDM-GCC-64\bin .</li>
+  <li>Path to gnumex utilities: This where the install directory of gnumex is located.</li>
+  <li>Environment / linking type: Available options are MinGW, Cygwin,
+and -mno-cygwin.&nbsp; The -mno-cygwin option is deprecated in current
+versions of Cygwin.&nbsp; Only Cygwin up to gcc 3.2 is supported.&nbsp;
+Please use the old documentation to find out how to use the correct
+ancient Cygwin package <a href="oldDocumentation/index.html">here</a>.<br />
+  </li>
+  <li>Generate mex ddl or engine exe? :&nbsp; Creating mex files (dlls)
+or standalone Matlab engine exe files. The default is Mex
+dll.&nbsp;&nbsp; The the Matlab documentation for more information.</li>
+  <li>Language for compilation: Specify which of supported compilers
+for different fortran and C/C++ compilers to use.&nbsp; The available
+options are&nbsp; Fortran 77,&nbsp; Fortran&nbsp; 95 (g95),&nbsp;
+Fortran&nbsp; 95&nbsp; (gfortran). <br />
+  </li>
+  <li>Add stub (yes if WIndows 95/98)? : <span style="font-weight: bold;"></span>This no longer used.&nbsp; Your selection does not matter.<br />
+  </li>
+  <li>Optimization level: -O1, -O2, -03, and -mtune=native are
+available.&nbsp; The larger the number, the higher the level of
+optimization but error are harder to trace.&nbsp; For debugging,
+disable optimization.&nbsp; For imformation on the different levels,
+see <a href="http://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html">Optimization Options in GCC</a>.&nbsp;
+-mtune=native tunes the generated code based on the processor family
+type of the compiling machine.&nbsp; For more information on
+-mtune=native, see <a href="http://gcc.gnu.org/onlinedocs/gcc/i386-and-x86_002d64-Options.html#i386-and-x86_002d64-Options">Intel 386 and AMD x86-64 Options</a> in the GCC documentation.<br />
+  </li>
+  <li>Path for libraries and .def files: The directory in which the .lib<br />
+  </li>
+</ul>
+<ol>
+</ol>
+
 <h3>Usage<br />
 </h3>
 <p>content</p>

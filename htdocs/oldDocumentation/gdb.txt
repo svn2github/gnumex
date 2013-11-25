@@ -1,0 +1,37 @@
+Instructions on debugging a mex file with gdb.
+
+This can be done, but is painful as 1) Matlab loads mex files (really dlls) into
+arbitrary locations.  gdb does not know where the dll was relocated to, and
+instead blithely assumes the dll is loaded at its default address (typically
+0x10000000).  However, the dll won't have been loaded there so debugging fails.
+
+The process that works at present:
+
+1) Give the dll a unique base address.  cygmex as provided here is set so that
+compiling with -g sets the image base to 0x28000000, and this seems to be unique
+enough that dlls are loaded there.  It is important that only one dll be
+compiled with -g (unless a different image base is given for each).
+
+2) Start Matlab, and execute the mex file.  Do this in a way that causes an
+error return: typically, with no arguments the mex file should issue and error
+message and return.  The dll is now loaded into memory so gdb can find it.
+
+3) Execute ps -W to find the process id of the Matlab session (call this pid)
+
+4) Start gdb.
+
+5) Issue command   attach pid
+
+6) Issue command   symbol-file <mexFunctionName>.dll
+
+7) Issue command  l  mexFunction, repeat until source lines to break at are seen
+
+8) b lineWhatever
+
+and now debug as usual.
+
+gdb REALLY needs to be able to trap on a dll load, and to determine the actual
+image base of the dll.  sheesh.
+
+
+
