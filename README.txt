@@ -1,49 +1,21 @@
 SUMMARY OF GNUMEX USAGE
 
-For more information see the detailed guidelines in [1]. They were written in
-2004, but are still (2007) pretty much up-to-date. Gnumex enables mex files
+For more information see the detailed guidelines in [1].  Gnumex enables mex files
 for C, C++ and Fortran to be created with gcc, and subsequently called from
-Matlab. For Fortran use see the accompanying file, readme-fortran.txt. The
-following steps are involved:
+Matlab. The following steps are involved:
 
-CHOOSE EITHER MINGW OR CYGWIN as the gcc environment. It is recommended that
-   MinGW be used because (A) Gnumex is not compatible with the most recent
-   versions of Cygwin, and (B) mex dll files compiled with cygwin crash Matlab
-   when reloaded. Both of these problems have been actual at least since 2004,
-   and are discussed in [1]. It is also possible to use the mixture, where
-   cygwin gcc is used with the -mno-cygwin switch (called cygwin-mingw in the
-   Gnumex window). For this a current cygwin version should be used, and it
-   probably does not crash Matlab. To use Fortran 95 one must install g95.
+INSTALL COMPILER:
+	See [1].
 
-   TO INSTALL MINGW:
-   Visit www.mingw.org. Select "Download" and then "Sourceforge File Release".
-   (Currently: http://sourceforge.net/project/showfiles.php?group_id=2435).
-   Dowload the "Automated MinGW Installer", run it and install at least the
-   MinGW base tools and the g++ compiler (and g77 if you want Fortran).
-
-   TO INSTALL OLD CYGWIN:
-   As said above you need an older version of Cygwin. Visit the web page
-   http://ptolemy.eecs.berkeley.edu/ptolemyII/ptII4.0/cygwin.htm, download
-   cygwinDevel.exe (35.4Mb) and follow the instruction on the web page.
-
-   TO INSTALL G95:
-   Visit g95.org, download and run one of the "Self-extracting Windows x86"
-   files. Choose to install in the MinGW folder and directory structure (usually
-   c:\mingw --- gnumex assumes that g95 is in the bin directory of MinGW).
-
-   TO INSTALL CURRENT CYGWIN:
-   Visit www.cygwin.com and choose "install or update cygwin now". Be sure to
-   install at least binutils, gcc-core, gcc-g++, and gcc-g77 for Fortran.
-
-NOW RUN GNUMEX. Cd to the folder where Gnumex is installed and type "gnumex"
-   at the Matlab prompt. This brings up a GUI-window. Make apropriate choices
+ RUN GNUMEX. Cd to the folder where Gnumex is installed and type "gnumex"
+   at the Matlab prompt. This brings up a GUI-window. Make appropriate choices
    (see [1]) and select "Make opts".
 
    If easy switching between compilers (or other Gnumex options) is desired
    it may be easier to add the Gnumex folder to the Matlab search path and
    use Gnumex in batch mode. Issue "gnumex usage" for a quick help.
 
-   This will ceate libraries of mex-, mx- and mat-functions ready to be called
+   This will create libraries of mex-, mx- and mat-functions ready to be called
    from C or Fortran programs (in Matlab 7.4 and later a preliminary step is
    the creation of .def-files in the Gnumex folder). Gnumex will also create a
    configuration file for the Matlab mex-command, called "options.bat" by
@@ -60,9 +32,7 @@ NOW RUN GNUMEX. Cd to the folder where Gnumex is installed and type "gnumex"
 
 WRITE A GATEWAY ROUTINE in C or Fortran which will be called from Matlab and
    calls the computational routines. The gateway routine must be named
-   mexFunction. For details refer to the Matlab documentation (in the newest
-   Matlabs the chapter is called "Calling C and Fortran Programs from
-   Matlab").
+   mexFunction. For details refer to the Matlab documentation.
 
 TO CREATE MEX-FILES use the Matlab mex command. It will by default look for a
    config file named "mexopts.bat" in the current folder, and if not found
@@ -77,25 +47,14 @@ TO CREATE MEX-FILES use the Matlab mex command. It will by default look for a
    creates files with extension .obj -- .obj files are valid inputs for
    subsequent mex-commands.
 
-EXAMPLE C MEXING: To try out mex-file creation copy the file yprime.c from the
-   Matlab examples folder to the current folder, compile it with mex and call
-   yprime. After running Gnumex (for C) you can issue from the Matlab prompt:
-       >> copyfile([matlabroot '\extern\examples\mex\yprime.c'])
-       >> mex yprime.c
-       >> yprime(1, 1:4)
-   and should receive the answer yp = 2.0000  8.9685  4.0000  -1.0947.
+EXAMPLE C MEXING: See example in Examples\GCC.
 
 ACCOMPANYING DOCUMENTATION AND EXAMPLE FILES:
-   readme-fortran.txt  More details on Fortran mexing
-   yprime77.f          A Fortran 77 example gateway routine
-   yprimef.f           A Fortran 77 example computational routine for yprime77
-   yprime95.f90        A Fortran 95 example program (gateway and module)
-   mexinterface.f90    Interface to mex functions for g95
-   mexinterface_c.f90  Interface to mex functions for gfortran
-   powerit.f90         Another Fortran 95 example, demonstrating more features
-   fengdemo.f          Example Fortran engine program
-   changes.txt         Lists changes after Gnumex version 1.11
-   README              This file
+	EXAMPLES			Folder of examples for various compilers
+	README              This file
+	changes.txt         Lists changes after Gnumex version 1.11
+	TODO				List of things that needs done
+	
 
 ERROR IN MEX.PL IN MATLAB 7.10 AND 7.11
    There is a bug in the file [matlabroot '/bin/mex.pl']: Line 809 should be:
@@ -105,8 +64,8 @@ ERROR IN MEX.PL IN MATLAB 7.10 AND 7.11
    thinking that getValidInputLinkLibraries was a library. I was not able to
    find a way around the error, so I ended up having gnumex automatically
    correcting the Matlab distribution. This correction may fail if mex.pl is
-   not writeable. Gnumex issues a worning if this happens. If the file cannot
-   be made writable, a possible workaround is to copy the m-file mex_helper.m
+   not writeable. Gnumex issues a warning if this happens. If the file cannot
+   be made writeable, a possible workaround is to copy the m-file mex_helper.m
    and the mex.pl file from the Matlab distribution to a local folder, make sure
    that folder is early in the the Matlab search path, correct the bug in mex.pl
    manually, and edit mex_helper.m to make matlab_bin_location point to the
@@ -123,10 +82,8 @@ HOW TO CHECK GNUMEX OUT-FROM/IN-TO SVN REPOSITORY AND RELEASE
    Developer k10 can login to repository with:
      ssh -t k10,gnumex@shell.sourceforge.net create
    
-NEXT STEPS: The author is working on support for new compilers (including the
-   Nag and the Intel Fortran 95 compilers).
-
 REFERENCES
    [1] http://gnumex.sourceforge.net
 
 Kristjan Jonasson, September 2007 (jonasson@hi.is)
+Jason Nicholson, March 2014	jashale@yahoo.com

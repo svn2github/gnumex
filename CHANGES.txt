@@ -150,3 +150,7 @@ CHANGES FROM VERSION 2.04 TO 2.05
 Added support for 64 bit matlab, and now create a .stp file if possible, so
 gcc appears in the list of located compilers when running mex -setup
 RC
+
+CHANGES FROM VERSION 2.05 to 2.06
+Updated documentation.  Did some cleanup and organization of gnumex,m, examples,
+and READMEs.

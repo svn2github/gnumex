@@ -1,208 +1,309 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en"><head>
+
+
+  <meta content="text/html; charset=us-ascii" http-equiv="content-type">
+  <meta content="2013-11-09 01:12:12 -0600" name="date">
+  <meta content="Jason Nicholson" name="author">
+  <meta content="Compile matlab mex files with gcc on Windows Platforms" name="description">
+  <meta content="Gnumex" name="keywords" lang="en">
+  <meta http-equiv="X-UA-Compatible" content="IE=9"><title>Gnumex - Documentation</title>
   
-  <meta http-equiv="content-type" content="text/html; charset=US-ASCII" />
-  <meta name="date" content="2013-11-09 01:12:12 -0600" />
-  <meta name="author" content="Jason Nicholson" />
-  <meta name="description" content="Compile matlab mex files with gcc on Windows Platforms" />
-  <meta name="keywords" content="Gnumex" lang="en" /><title>Gnumex - Documentation</title>
-  
-  <link rel="stylesheet" type="text/css" href="gnumex.css" /></head><body>
-<div id="top-menu" class="menu">
-<table class="menu" summary="Menus">
-  <tbody>
-    <tr>
-      <td style="width: 90px;" class="menu" rowspan="2"> <br />
-      </td>
-      <td class="menu" style="padding-top: 0.9em;"> <big class="menu">Gnumex</big><small class="menu"> - Compile matlab mex files with gcc on Windows Platforms</small>
-      </td>
-    </tr>
-    <tr>
-      <td class="menu"> <a href="index.html" class="menu">Home</a> &nbsp;&nbsp;&nbsp;
- <a href="contributors.html" class="menu">Contributors</a> &nbsp;&nbsp;&nbsp;
- <a href="documentation.html" class="menu">Documentation</a> &nbsp;&nbsp;&nbsp;
- <a href="http://sourceforge.net/p/gnumex/files/" class="menu">Download</a> &nbsp;&nbsp;&nbsp;
- <a href="FAQ.html" class="menu">FAQ</a> &nbsp;&nbsp;&nbsp;
- <a href="http://sourceforge.net/p/gnumex/bugs" class="menu">Bugs</a> &nbsp;&nbsp;&nbsp;
- <a href="http://sourceforge.net/p/gnumex/mailman" class="menu">Mailing Lists</a> &nbsp;&nbsp;&nbsp;
- <a href="http://sourceforge.net/p/gnumex/code" class="menu">Code</a> &nbsp;&nbsp;&nbsp;
-      <a href="links.html" class="menu">Links</a> </td>
-    </tr>
-  </tbody>
-</table>
-</div>
+  <link href="gnumex.css" rel="stylesheet" type="text/css"></head><body>
+<script type="text/javascript" src="menu.js">
+</script>
 
 <div id="content">
-<div class="section">
-<h2>Documentation</h2>
-<h2>Table of Contents here</h2>
-<br />
-<br />
-<h3>Preface and Background<br />
-</h3>
-<p>A knowledge of MATLAB is necessary.&nbsp; A knowledge of simple
-compilation of C, C++, or Fortran is helpful.&nbsp; Also, if you have
-worked with MinGW, MinGW-w32, or MinGW-w64 that is helpful.<br />
-</p>
-<p>The main attractions for using GCC for Windows over other compilers
-is the following:</p>
-<ol>
-  <li>GCC is free as no money and free as in speech.</li>
-  <li>Gfortran is the only Fortran compiler on windows that is
-free.&nbsp; The only other option with MATLAB seems to be the Intel
-Fortran compiler.<br />
-  </li>
-  <li>Compiling with GCC may allow the same source file to be used on
-both Unix and Windows operating systems.</li>
-</ol>
-There are two main approaches with GCC on Windows signified by Cygwin
-and <span style="font-style: italic;">Min</span>imalist <span style="font-style: italic;">G</span>CC for <span style="font-style: italic;">W</span>indows
-(MinGW).&nbsp; MinGW approach is to link to Microsoft run-time
-libraries, which result in fast executables, but restricts
-compatibility with GCC on Unix.&nbsp; In contrast, Cygwin GCC links to
-a dynamic link library, cygwin1.dll, which provides a Unix style API
-that allows access to many more Unix routines than the Microsoft
-run-time libraries.&nbsp; Cygwin is often slower but has better
-compatibility.&nbsp; Cygwin1.dll is required on the PATH when calling
-your executable or library. See the <a href="http://sources.redhat.com/cygwin/faq/faq_toc.html">Cygwin FAQ</a>
-for more on the Cygwin API and how the Unix emulation works.&nbsp; <br />
-<br />
-To make matters more complicated, MinGW-w64 is a different project than
-MinGW.&nbsp; MinGW-w64 forked
-the MinGW code and added 64 bit support.&nbsp; However, the MinGW-w64
-project has support for both 32 bit and 64
-compiling on Windows but MinGW only supports 32 bit. <br />
-<br />
-As an added complication, you can also do MinGW compiles using the
-Cygwin tools, i.e. use the Cygwin tools to link to the Microsoft
-libraries. This is achieved by passing a flag to the Cygwin gcc,
--mno-cygwin. This is refered to as Cygwin/mingw compiling. There are
-some problems with this option. The old gnumex utilities do
-support Cygwin-mingw compiles, however it is strongly suggested to use
-MinGW
-instead. <br />
-<br />
-Note that Cygwin does not play well with MATLAB.&nbsp; If you use
-Cygwin without -mno-cygwin flag, only GCC 3.2 or below works.&nbsp; The
--mno-cygwin flag is deprecated.&nbsp; Reports of Cygwin crashing MATLAB
-are common on the mailing list.&nbsp; Therefore, MinGW or
-MinGW-w64 is recommended.&nbsp; Support for cygwin updates will no
-longer be made
-after Gnumex 2.05.&nbsp; If you need Gnumex to use Cygwin, then use an
-older version of Gnumex.<br />
-<h4>Prerequisite: Installing MinGW or MinGW-w64</h4>
-<p>Configuring Gnumex requires either MinGW or MinGW-w64 to be
-installed first.&nbsp; Cygwin is
-no longer supported.&nbsp; No further updates will be made for Cygwin.<br />
-</p>
-<p>There are muliple flavors of MinGW and MinGW-w64.&nbsp; Two
-different links to different MinGW-w64 projects are in the <a href="links.html">Links</a>
-section as examples that contributors have used.&nbsp; If you plan to
-work with 32 bit MATLAB, get the 32 bit compiler.&nbsp; For 64 bit
-MATLAB, get a 64 bit compiler.&nbsp; <br />
-</p>
-<p>&nbsp; As an example, here is instructions for the compiler from
-TDM-GCC:</p>
-    <ol>
-      <li>Download TDM-GCC package from <a href="http://tdm-gcc.tdragon.net/">here</a>.&nbsp; If you have 32bit
-MATLAB, get the 32 bit TDM-GCC package.&nbsp; If you have 64bit MATLAB
-get the 64bit version.<br />
-      </li>
-      <li>Run the installer and follow the instructions.&nbsp; Install
-to the
-default location of TDM-GCC-32 or TDM-GCC-64. Please note that the
-installer modifies
-the PATH environmental variable (if you don't know what this is, google
-"windows environmental variable").</li>
-      <li>That's it.&nbsp; Nothing to it.<br />
-      </li>
-    </ol>
-<h3>Installing and Setting Up Gnumex</h3>
-  <ol>
-    <li>Obtain the latest version of Gnumex from the <a href="https://sourceforge.net/projects/gnumex/files/">Download</a>
-section.</li>
-    <li>Unpack the archive (using tar, winzip, whatever) into a
-directory of your choice - say ...\Documents\gnumex. You now have: a Matlab
-install routine, gnumex.m; a couple of mex file supporting routines
-(shortpath.dll, uigetpath.dll); a hacked version of the windows dll
-utility, dlltool (<a href="dlltool.html">click to see issue with dlltool</a>), and some perl
-scripts.</li>
-    <li>To
-setup Gnumex, run the gnumex script from the install directory (e.g
-...\Documents\gnumex).&nbsp; A Matlab figure window comes up, with
-a variety of options, which should look a little like this:<br />
-      <img style="width: 669px; height: 578px;" alt="Gnumex dialog" title="Gnumex MATLAB dialog" src="gnumex.png" /></li>
-    <li>Fill
-in the dialog window and then click "Make options file."&nbsp; Gnumex
-will use all of the filled information to generate a newbatch file that Matlab can use to mex code. </li></ol><span class="option"></span>f<br />
-<br />
-<ol>
-  <li>The 1st edit box should point to the root directory of MingW.
-Set this if you have installed MingW. The "Path to gnumex file
-utilities" edit box sets the directory with the gnumex files (default -
-the current working directory). There is also an edit box for the name
-of the options bat file to be created. You might want to leave this as
-the default, which is Matlab's default mexopts location for your system
-or account.<br /><br />
-    </li>
-  <li>Select MinGW in the "Environment/linking type" box.&nbsp; A
-second list box selects whether the opt file is for creating mex files
-(dlls), or standalone Matlab engine exe files. The default is Mex dll.
-The third box specifies the language for the compile (C/C++ or
-fortran). There is also a list box selecting Safe or Quick compiles;
-this has an associated precompiled library directory edit box. For the
-moment, leave the list box at it's default value.&nbsp; <br />
 
-    </li>
-</ol>
+<div class="section">
+<h2 id="L19">Documentation</h2>
+
+<div class="toc">
 <ul>
-  <li>MinGW root directory (maybe blank): This should point to the base directory of MinGW or MinGW-w64. For example, C:\TDM-GCC-64</li>
-  <li>Cygwin root directory (or blank): This is the base folder of Cygwin.&nbsp; Often C:\cygwin .<br />
-  </li>
-  <li>Path to g95.exe (or blank):&nbsp;&nbsp; This is the folder that g95.exe is located.&nbsp; For instance, C:\TDM-GCC-64\bin .<br />
-  </li>
-  <li>Path to gfortran.exe (or blank): This is the folder containing gfortran.&nbsp; For instance, C:\TDM-GCC-64\bin .</li>
-  <li>Path to gnumex utilities: This where the install directory of gnumex is located.</li>
-  <li>Environment / linking type: Available options are MinGW, Cygwin,
-and -mno-cygwin.&nbsp; The -mno-cygwin option is deprecated in current
-versions of Cygwin.&nbsp; Only Cygwin up to gcc 3.2 is supported.&nbsp;
-Please use the old documentation to find out how to use the correct
-ancient Cygwin package <a href="oldDocumentation/index.html">here</a>.<br />
-  </li>
-  <li>Generate mex ddl or engine exe? :&nbsp; Creating mex files (dlls)
-or standalone Matlab engine exe files. The default is Mex
-dll.&nbsp;&nbsp; The the Matlab documentation for more information.</li>
-  <li>Language for compilation: Specify which of supported compilers
-for different fortran and C/C++ compilers to use.&nbsp; The available
-options are&nbsp; Fortran 77,&nbsp; Fortran&nbsp; 95 (g95),&nbsp;
-Fortran&nbsp; 95&nbsp; (gfortran). <br />
-  </li>
-  <li>Add stub (yes if WIndows 95/98)? : <span style="font-weight: bold;"></span>This no longer used.&nbsp; Your selection does not matter.<br />
-  </li>
-  <li>Optimization level: -O1, -O2, -03, and -mtune=native are
-available.&nbsp; The larger the number, the higher the level of
-optimization but error are harder to trace.&nbsp; For debugging,
-disable optimization.&nbsp; For imformation on the different levels,
-see <a href="http://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html">Optimization Options in GCC</a>.&nbsp;
--mtune=native tunes the generated code based on the processor family
-type of the compiling machine.&nbsp; For more information on
--mtune=native, see <a href="http://gcc.gnu.org/onlinedocs/gcc/i386-and-x86_002d64-Options.html#i386-and-x86_002d64-Options">Intel 386 and AMD x86-64 Options</a> in the GCC documentation.<br />
-  </li>
-  <li>Path for libraries and .def files: The directory in which the .lib<br />
+  <li><a href="#L19">Documentation</a>
+    <ul>
+      <li><a href="#L47">Preface and Background</a></li>
+      <li><a href="#L107">Prerequisite: Installing MinGW, MinGW-w32, or
+        MinGW-w64</a></li>
+      <li><a href="#L131">Installing and Setting Up Gnumex</a></li>
+      <li><a href="#L150">Usage</a></li>
+      <li><a href="#L196">The Code</a></li>
+      <li><a href="#L201">Cygwin Support</a></li>
+      <li><a href="#L206">Special Topics</a>
+        <ul>
+          <li><a href="#L208">Fortran Compiling</a></li>
+			<ul>
+				<li><a href="#L215">Fortran File Extensions</a></li>
+				<li><a href="#L221">Case Options and Trailing Underscores</a></li>
+				<li><a href="#L230">Mex Functions With Character String Arguments</a></li>
+				<li><a href="#L239">Pointers and %VAL</a></li>
+				<li><a href="#L246">Example Fortran Programs</a></li>
+				<li><a href="#L269">Running the Fortran Examples</a></li>
+			</ul>
+          <li><a href="#L249">Linking to LAPACK/BLAS libraries</a></li>
+          <li><a href="#L272">Using Autotools with Gnumex </a></li>
+        </ul>
+      </li>
+    </ul>
   </li>
 </ul>
+</div>
+
+<h3 id="L47">Preface and Background</h3>
+
+<p>A knowledge of MATLAB is necessary.&nbsp; A knowledge of simple compilation
+of C, C++, or Fortran is helpful.&nbsp; Also, if you have worked with MinGW,
+MinGW-w32, or MinGW-w64 that is helpful.</p>
+
+<p>The main attractions for using GCC for Windows over other compilers is the
+following:</p>
 <ol>
+  <li>GCC is free as no money and free as in speech.</li>
+  <li>Gfortran is the only Fortran compiler on windows that is free.&nbsp; The
+    only other option with MATLAB seems to be the Intel Fortran compiler.</li>
+  <li>Compiling with GCC may allow the same source file to be used on both Unix
+    and Windows operating systems.</li>
 </ol>
 
-<h3>Usage<br />
-</h3>
-<p>content</p>
-<h3>Tips<br />
-</h3>
-<br />
-<div id="sf_logo"> <a href="http://sourceforge.net/"><img src="http://sourceforge.net/sflogo.php?group_id=2888&amp;type=1" style="border: 0pt none ;" alt="SourceForge.net Logo" height="31" width="88" /></a>
-</div>
-</div>
-</div>
+<p>There are two methods used to compile code using GCC on Windows.&nbsp; These methods are <span style="font-style: italic;">Min</span>imalist <span style="font-style: italic;">G</span>CC for <span style="font-style: italic;">W</span>indows
+(MinGW) or the Cygwin environment.&nbsp; MinGW is a native
+implementation of the GCC compiler and some other tools. MinGW links
+directly to Microsoft run-time libraries. Cygwin provides a unix-like
+environment in windows. Programs are compiled to run in this
+environment and link to a Cygwin dll called cygwin1.dll. The MinGW
+approach results in faster executables, but
+restricts compatibility with GCC on Unix.&nbsp; Cygwin produces slower
+executables, but allows a larger set of Unix-style tools.&nbsp; With
+Cygwin,&nbsp;
+the cygwin1.dll must be on the PATH when calling your executable or
+library.&nbsp;
+See the <a href="https://www.sourceware.org/cygwin/faq/">Cygwin
+FAQ</a> for more on the Cygwin API and how the Unix emulation works.&nbsp;</p>
 
+<p>In 2007 a new project, MinGW-w64 was released as a fork from the
+original MinGW project. &nbsp; MinGW-w64 added 64 bit support.&nbsp;
+However, the MinGW-w64 project has support for both 32 bit and 64
+compiling on
+Windows but MinGW only supports 32 bit.&nbsp; A brief history of why
+MinGW-w64 forked MinGW is available <a href="http://sourceforge.net/apps/trac/mingw-w64/wiki/History">here</a>.<br>
+</p>
+
+<p>As an added complication, you can also do MinGW compiles using the Cygwin
+tools. i.e. use the Cygwin tools to link to the Microsoft libraries. This is
+achieved by passing a flag to the Cygwin gcc, -mno-cygwin. This is refered to
+as Cygwin/mingw compiling. There are some problems with this option. The old
+gnumex utilities do support Cygwin-mingw compiles, however it is strongly
+suggested to use MinGW instead.</p>
+
+<p>Note that Cygwin does not play well with MATLAB.&nbsp; If you use
+Cygwin
+without -mno-cygwin flag, only GCC 3.2 or below works.&nbsp; The
+-mno-cygwin
+flag is deprecated.&nbsp; Reports of Cygwin crashing MATLAB are common
+on the
+mailing list.&nbsp; Therefore, MinGW or MinGW-w64 is recommended.&nbsp;
+Support
+for cygwin updates will no longer be made after Gnumex 2.05.&nbsp; If
+you need
+Gnumex to use Cygwin, then use an older version of Gnumex.&nbsp; More
+documentation on Cygwin can be found on the old documentation <a href="oldDocumentation/index.html">here</a>.<br>
+</p>
+
+<h3 id="L107">Prerequisite: Installing MinGW or MinGW-w64</h3>
+
+<p>Configuring Gnumex requires either MinGW or MinGW-w64 to be installed
+first.&nbsp; Cygwin is no longer supported.&nbsp; No further updates will be
+made for Cygwin. If need help with Cygwin please see the old website <a href="oldDocumentation/index.html">here</a>.</p>
+
+<p>There are muliple flavors of MinGW and MinGW-w64.&nbsp; Two different links
+to different MinGW-w64 projects are in the <a href="links.html">Links</a>
+section as examples that contributors have used.&nbsp; If you plan to work with
+32 bit MATLAB, get the 32 bit compiler.&nbsp; For 64 bit MATLAB, get a 64 bit
+compiler.&nbsp;</p>
+
+<p>&nbsp; As an example, here is instructions for the compiler from TDM-GCC:</p>
+<ol>
+  <li>Download TDM-GCC package from <a href="http://tdm-gcc.tdragon.net/">here</a>.&nbsp; If you have 32bit
+    MATLAB, get the 32 bit TDM-GCC package.&nbsp; If you have 64bit MATLAB get
+    the 64bit version.</li>
+  <li>Run the installer and follow the instructions.&nbsp; Install to the
+    default location of TDM-GCC-32 or TDM-GCC-64. Please note that the
+    installer modifies the PATH environmental variable (if you don't know what
+    this is, google "windows environmental variable").</li>
+  <li>That's it.&nbsp; Nothing to it.</li>
+</ol>
+
+<h3 id="L131">Installing and Setting Up Gnumex</h3>
+<ol>
+  <li>Obtain the latest version of Gnumex from the <a href="https://sourceforge.net/projects/gnumex/files/">Download</a>
+  section.</li>
+  <li>Unpack the archive (using tar, winzip, whatever) into a directory of your
+    choice - say ...\Documents\gnumex. You now have: a Matlab install routine,
+    gnumex.m; a couple of mex file supporting routines (shortpath.dll,
+    uigetpath.dll); a hacked version of the windows dll utility, dlltool ( <a href="dlltool.html">click to see past issue with dlltool</a>), and some perl
+    scripts.</li>
+  <li>To setup Gnumex, run the gnumex script from the install directory (e.g
+    ...\Documents\gnumex).&nbsp; A Matlab figure window comes up, with a
+    variety of options, which should look a little like this:<br>
+    <img alt="Gnumex dialog" src="gnumex.png" style="width: 669px; height: 578px;" title="Gnumex MATLAB dialog"></li>
+  <li>Fill
+in the dialog window and then click "Make options file."&nbsp; Gnumex
+will use all of the filled information to generate a new batch file--
+usually called mexopts.bat--that Matlab can use to mex code.</li>
+</ol>
+
+<h3 id="L150">Usage</h3>
+<ul>
+  <li><span class="option">MinGW root directory (maybe blank):</span> This
+    should point to the base directory of MinGW or MinGW-w64. For example,
+    C:\TDM-GCC-64</li>
+  <li><span class="option">Cygwin root directory (or blank):</span> This is the
+    base folder of Cygwin.&nbsp; Often C:\cygwin .</li>
+  <li><span class="option">Path to g95.exe (or blank):</span> This is the
+    folder that g95.exe is located.&nbsp; For instance, C:\TDM-GCC-64\bin .</li>
+  <li><span class="option">Path to gfortran.exe (or blank):</span> This is the
+    folder containing gfortran.&nbsp; For instance, C:\TDM-GCC-64\bin .</li>
+  <li><span class="option">Path to gnumex utilities:</span> This where the
+    install directory of gnumex is located.</li>
+  <li><span class="option">Environment / linking type:</span> Available options
+    are MinGW, Cygwin, and -mno-cygwin.&nbsp; The -mno-cygwin option is
+    deprecated in current versions of Cygwin.&nbsp; Only Cygwin up to gcc 3.2
+    is supported.&nbsp; Please use the old documentation to find out how to use
+    the correct ancient Cygwin package <a href="oldDocumentation/index.html">here</a>.</li>
+  <li><span class="option">Generate mex ddl or engine exe? :</span>&nbsp;
+    Creating mex files (dlls) or standalone Matlab engine exe files. The
+    default is Mex dll.&nbsp;&nbsp; The the Matlab documentation for more
+    information.</li>
+  <li><span class="option">Language for compilation:</span> Specify which of
+    supported compilers for different fortran and C/C++ compilers to use.&nbsp;
+    The available options are&nbsp; Fortran 77,&nbsp; Fortran&nbsp; 95
+    (g95),&nbsp; Fortran&nbsp; 95&nbsp; (gfortran).</li>
+  <li><span class="option">Add stub (yes if WIndows 95/98)? :</span> This no
+    longer used.&nbsp; Your selection does not matter.</li>
+  <li><span class="option">Optimization level:</span> -O1, -O2, -03, and
+    -mtune=native are available.&nbsp; The larger the number, the higher the
+    level of optimization but error are harder to trace.&nbsp; For debugging,
+    disable optimization.&nbsp; For imformation on the different levels, see <a href="http://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html">Optimization
+    Options in GCC</a>.&nbsp; -mtune=native tunes the generated code based on
+    the processor family type of the compiling machine.&nbsp; For more
+    information on -mtune=native, see <a href="http://gcc.gnu.org/onlinedocs/gcc/i386-and-x86-64-Windows-Options.html#i386-and-x86-64-Windows-Options">Intel
+    386 and AMD x86-64 Options</a> in the GCC documentation.&nbsp; More on
+    Optimization from the Gnumex team: <a href="Optimization.html">here</a>.</li>
+  <li><span class="option">Path for libraries and .def files:</span> Path for
+    import libraries, .lib, and definition files, .def, for the MATLAB dll's
+    are saved.<br>
+</li>
+  <li><span class="option">Mex options file to create:</span> Controls where
+    Gnumex save the Mex options file. The default is where MATLAB stores the
+    Mex options file, mexopts.bat.</li>
+</ul>
+
+<h3 id="L196">The Code</h3>
+
+<p>The main piece of code is the <code>gnumex.m</code> function.&nbsp; Below is
+a description of the contents of <code>gnumex.m</code><img alt="gnumex.m" src="FoldedCode.svg"> </p>
+
+<h3 id="L201">Cygwin Support</h3>
+
+<p>Cygwin still works but no there is no plan to maintain support with Cygwin. If you need more information on Gnumex with Cygwin, please
+see the old website <a href="oldDocumentation/index.html">here</a>.</p>
+
+<h3 id="L206">Special Topics</h3>
+
+<h4 id="L208">Fortran Compiling</h4>
+
+<p>Fortran compiling seems to have caused the more problems than the other
+languages with Gnumex over the years. Currently, Gnumex will work with gfortran for 32bit.
+Old versions of g77, g95, gfortran also work. 64-bit fortran has worked in some cases but
+still needs work.</p>
+
+<h5 id="L215">Fortran File Extensions</h5>
+  <p>Fortran 77 programs and Fortran 90/95 programs in fixed source form should
+  have extension .f, but free form Fortran 95 programs must have extension .f90
+  (the compilers support also the extension .f95, but Matlab's mex command does
+  not, and .f90 is generally preferred over .f95 anyway).</p>
+
+<h5 id="L221">Case Options and Trailing Underscores</h5>
+<p>In contrast gfortran does not offer the -fcase switches, and in fact defaults
+to the behaviour of -fcase-lower. To circumvent the problem that this causes
+one can use BIND(C,NAME...) clauses in interface blocks for the mx and mex
+functions, e.g. BIND(C,NAME='MXGETPR') (the mx and mex functions are probably
+written in C anyway). The demonstration programs give more details.</p>
+
+<h5 id="L230">Mex Functions With Character String Arguments</h5>
+<p>gfortran seems to have a different mechanism for passing character
+strings, and the Fortran versions of these functions do not work. Thus
+mexinterface_c.f90 binds them to the corresponding C-functions (with mixed
+case names). This means that strings passed to them from gfortran must have
+an ascii zero appended, viz:</p>
+       <p><code>call mexprintf('A message'//char(0))<br>
+       call mexerrmsgtxt('An error occurred'//char(10)//char(0))</code></p>
+
+<h5 id="L239">Pointers and %VAL</h5>
+<p>Matlab sends integer memory addresses (pointers) to the gateway routine and
+these must be translated to arrays. In g77 the construct %val may be used, but
+in g95 it is possible to use native pointers. Again the demonstration programs
+give the details.</p>
+
+<h5 id="L246">Example Fortran Programs</h5>
+<p>The demo Fortran programs that come with Matlab some use the %val construct
+but others use instead the functions mxCopyPtrToXXX and mxCopyXXXToPtr. With
+g77 it is much simpler to stick with the %val construct. The example gateway
+routine of Matlab, yprimefg.f (in <matlabroot>\extern\examples\mex) is
+totally incompatible with all the gnu Fotran compilers. However with Gnumex
+there are routines, yprime77.f and yprime95.f90 which are compatible. The
+first one calls the computational routine in yprimef.f, but the second
+contains a module with a computational routine that is called (the yprimef.f
+that comes with Matlab is actually g77-compatible, but for convenience a
+similar routine is enclosed with Gnumex). The demonstartion programs are
+located in a subfolder, examples, in the folder where Gnumex is installed.</p>
+
+<p>For Fortran 90 there is an additional demonstration program, powerit.f90,
+which carries out power iteration (to find dominant eigenvalue) with a sparse
+matrix. The Fortran 90 demo programs include two modules, mexinterface_c.f90
+and mexinterface.f90. The second one is simpler but does not work with
+gfortran (because of the -fcase issue discussed above), but the second one
+works for both compilers. These modules define the interface to those mx-
+and mex-	 which are used by the demo programs, and if other functions
+are needed their interface must be added here.</p>
+
+<h5 id="L269">Running the Fortran Examples</h5>
+<p>Use the html pages stored with each set of examples for the specified
+compiler you are using.</p>
+
+<h4 id="L249">Linking to LAPACK/BLAS libraries</h4>
+
+<p>Mex files doing a lot of matrix algebra are likely to benefit from linking
+to the highly optimized <a href="http://www.netlib.org/blas/">BLAS</a> and <a href="http://www.netlib.org/lapack/">LAPACK</a> routines. Linking steps are
+described in a <a href="http://www.mathworks.com/help/matlab/matlab_external/calling-lapack-and-blas-functions-from-mex-files.html">Mathworks
+BLAS/LAPACK help page.</a> For gcc, you simply follow the instructions on that
+page, but use the Microsoft MSVC++ import libraries to link; e.g, from the
+matlab prompt:</p>
+
+<p><code>mex myfile.c libmwlapack.lib</code></p>
+
+<p>You may on occasion want to link a c file to a fortran object file, which
+then links to BLAS or LAPACK; in this case, compile the fortran file with the
+"-fno-underscoring" flag; e.g - outside matlab:</p>
+
+<p><code>g77 -fno-underscoring -c my_fortran_file.f</code></p>
+
+<p>Then, inside matlab:</p>
+
+<p><code>mex myfile.c my_fortran_file.o
+c:/matlab6p5/extern/lib/win32/microsoft/msvc60/libmwlapack.lib</code></p>
+
+<h4 id="L272"><a class="mozTocH4" name="mozTocId545751" id="mozTocId545751">Using Autotools with Gnumex</a> </h4>
+
+<p>Christopher Hulbert has kindly written a page on using <a href="autotools/index.html">GNU autotools with gnumex</a>. GNU autotools
+(autoconf and automake) allow you to script platform independent compilation
+which is often useful for larger projects.</p>
+
+<div id="sf_logo">
+<a href="http://sourceforge.net/"><img alt="SourceForge.net Logo" src="http://sourceforge.net/sflogo.php?group_id=2888&amp;type=1" style="border: 0pt none ;" height="31" width="88"> </a> 
+
+<p><a href="http://validator.w3.org/check?uri=referer"><img src="http://www.w3.org/Icons/valid-html401" alt="Valid HTML 4.01 Strict" height="31" width="88"></a> </p>
+</div>
+</div>
+</div>
 </body></html>

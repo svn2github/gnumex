@@ -1,4 +1,4 @@
-* mex file example for g77
+* Gateway routine example for g77
       subroutine mexfunction(nlhs, plhs, nrhs, prhs)
       integer plhs(nlhs), prhs(nrhs), ypp, tp, yp
 * check for proper number of arguments

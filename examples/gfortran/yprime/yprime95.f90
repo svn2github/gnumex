@@ -2,7 +2,7 @@
 !
 ! To turn on g95 mexing, compile, link and try out, use the Matlab commands:
 !
-!    >> gnumex g95
+!    >> gnumex
 !    >> mex yprime95.f90
 !    >> yprime95(1, 1:4)
 !
@@ -44,8 +44,6 @@ subroutine mexfunction(nlhs, plhs, nrhs, prhs)
   !
   if (nrhs /= 2) call mexerrmsgtxt('yprime requires two input arguments')
   if (nlhs > 1) call mexerrmsgtxt('yprime requires one output argument')
-  call mexprintf('abcd'//char(10))
-  call mexprintf('RSTU')
   m = mxgetm(prhs(2))
   n = mxgetn(prhs(2))
   if (min(m,n) /= 1) call mexerrmsgtxt('y must be a vector'//char(0))

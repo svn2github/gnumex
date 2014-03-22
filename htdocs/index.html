@@ -1,77 +1,46 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-  <head>
-      <meta http-equiv="content-type" content="text/html; charset=US-ASCII"></meta>
-      <meta name="date" content="2013-11-09 01:12:12 -0600"></meta>
-      <meta name="author" content="Jason Nicholson"></meta>
-      <meta name="description" content="Instructions and links for using the Mingw / Cygwin gcc for windows and MATLAB"></meta>
-      <meta name="Classification" content="matlab, gcc, mex, windows, 32 bit, 64 bit, 95, 98, 9x, NT, 2000, XP, 7, 8, Mingw, Cygnus, Cygwin, EGCS, compiler, bat files, scripts"></meta>
-      <meta name="KeyWords" content="matlab, gcc, mex, windows, 32 bit, 64 bit, 95, 98, 9x, NT, 2000, XP, 7, 8, Mingw, Cygnus, Cygwin, gcc, compiler, bat files, scripts"></meta>
-      <TITLE>Gnumex - Home</TITLE>
-      <link rel="stylesheet" type="text/css" href="gnumex.css"></link>
-  </head>
-  <body>
-  <div id="top-menu" class="menu"> 
-   <table class="menu" summary="Menus">
-      <tbody><tr>
-        <td style="width: 90px;" class="menu" rowspan="2">
-        </td>
-        <td class="menu" style="padding-top: 0.9em;">
-          <big class="menu">Gnumex</big><small class="menu"> - Compile matlab mex files with gcc on Windows Platforms</small>
-        </td>
-      </tr>
-      <tr>
-        <td class="menu">   
- <a href="index.html" class="menu">Home</a> &nbsp;&nbsp;&nbsp;
- <a href="contributors.html" class="menu">Contributors</a> &nbsp;&nbsp;&nbsp;
- <a href="documentation.html" class="menu">Documentation</a> &nbsp;&nbsp;&nbsp;
- <a href="http://sourceforge.net/p/gnumex/files/" class="menu">Download</a> &nbsp;&nbsp;&nbsp;
- <a href="FAQ.html" class="menu">FAQ</a> &nbsp;&nbsp;&nbsp;
- <a href="http://sourceforge.net/p/gnumex/bugs" class="menu">Bugs</a> &nbsp;&nbsp;&nbsp;
- <a href="http://sourceforge.net/p/gnumex/mailman" class="menu">Mailing Lists</a> &nbsp;&nbsp;&nbsp;
- <a href="http://sourceforge.net/p/gnumex/code" class="menu">Code</a>&nbsp;&nbsp;&nbsp;
- <a href="links.html" class="menu">Links</a>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en"><head>
 
-        </td>
-      </tr>
-    </tbody></table>
-  </div>
+  
+      <meta http-equiv="content-type" content="text/html; charset=US-ASCII">
+      <meta name="date" content="2013-11-09 01:12:12 -0600">
+      <meta name="author" content="Jason Nicholson">
+      <meta name="description" content="Instructions and links for using the Mingw / Cygwin gcc for windows and MATLAB">
+      <meta name="Classification" content="matlab, gcc, mex, windows, 32 bit, 64 bit, 95, 98, 9x, NT, 2000, XP, 7, 8, Mingw, Cygnus, Cygwin, EGCS, compiler, bat files, scripts">
+      <meta name="KeyWords" content="matlab, gcc, mex, windows, 32 bit, 64 bit, 95, 98, 9x, NT, 2000, XP, 7, 8, Mingw, Cygnus, Cygwin, gcc, compiler, bat files, scripts"><title>Gnumex - Home</title>
+      
+      <link rel="stylesheet" type="text/css" href="gnumex.css"></head><body>
+<script src="menu.js" type="text/javascript"></script>
 
 <div id="content">
 
 <div class="section">
-
-  <p>
-   Gnumex is a package that allows Matlab mex and engine files written in C, 
+<p>Gnumex is a package that allows Matlab mex and engine files written in C, 
    C++, Fortran 77 or Fortran 95 to be compiled with MinGW (or Cygwin) MS 
-   Windows versions of gcc, gfortran or g95.  Here are some of the features in
+   Windows versions of gcc, gfortran, g77 or g95.  Here are some of the features in
    gnumex:
   </p> 
-   <ul class="section">
-		<li class="section">Compile Matlab mex files using gcc on Windows</li>
-		<li class="section">Compatible with 64 bit MATLAB using Mingw-w64 and 32
-			bit MATLAB using mingw-w32 or mingw</li>
-		<li class="section">Allows gcc to appear in the list of compilers shown 
-			by mex -setup, and easy switching</li>
-		<li class="section">C, C++, Fortran 77 or Fortran 95 mex files</li>
-    </ul>
+   <ul class="section"><li class="section">Compile Matlab mex files using gcc on Windows</li><li class="section">Compatible with 64 bit MATLAB using Mingw-w64 and 32
+			bit MATLAB using mingw-w32 or mingw</li><li class="section">Allows gcc to appear in the list of compilers shown 
+			by mex -setup, and easy switching</li><li class="section">C, C++, Fortran 77 or Fortran 95 mex files</li></ul>
 	
 </div>
 <div class="section">
 <h2>Recent News</h2>
 <p>This is a short abbreviated list of the changes that were introduced in
 recent versions. &nbsp;See the "changes.txt" log packaged in the latest download.</p>
-<dl>
-<!--New news go here-->
-<dt>2013-Sept-06</dt>
-<dd>
+<dl><dt>2014-March-22</dt><dd>
+<p>The website was overhauled and documentation updated.  More is needed but it is an improvement.
+</dd></dl>
+<dl><dt>2013-Sept-06</dt><dd>
 <p>Added support for 64 bit MATLAB</p>
-</dd>
-<!--News end here-->
-</dl></div>
+</dd></dl></div>
 
 <div id="sf_logo">
-  <a href="http://sourceforge.net/"><img src="http://sourceforge.net/sflogo.php?group_id=2888&amp;type=1" width="88" height="31" style="border: 0;" alt="SourceForge.net Logo"></img></a>
-</div>
+  <a href="http://sourceforge.net/"><img src="http://sourceforge.net/sflogo.php?group_id=2888&amp;type=1" style="border: 0pt none ;" alt="SourceForge.net Logo" height="31" width="88"></a>
+<p>
+    <a href="http://validator.w3.org/check?uri=referer"><img src="http://www.w3.org/Icons/valid-html401" alt="Valid HTML 4.01 Strict" height="31" width="88"></a>
+  </p>
+  </div>
 </div>
 </body></html>
