@@ -26,7 +26,7 @@ function varargout = gnumex(varargin)
 %         'report'
 %         'test'
 %         'usage'           
-%         'command_options' Displays the need command line arguments to
+%         'command_options' Displays the needed command line arguments to
 %                           bypass the dialog
 %         'exit'            Internal use for exiting dialog
 
@@ -1724,7 +1724,7 @@ end %end function gnumex
 
 %% Subroutines
 
-% fdwarn
+%% fdwarn
 function varargout = fdwarn(pathname, filename)
 % checks whether path is valid, then for file therein contained returns
 % true if both are true, msg for warning if not
