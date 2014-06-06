@@ -1363,7 +1363,7 @@ switch action
         fp(['set LINKFLAGS=' linkfs ' -L' pps.precompath]);
         fp('set LINK_FILE=');
         fp('set LINK_LIB=');
-        fp(['set NAME_OUTPUT=-o %OUTDIR%%MEX_NAME%.' oext]);
+        fp('set NAME_OUTPUT=-o "%OUTDIR%%MEX_NAME%%MEX_EXT%"');
         fp('rem');
         fp('rem Resource compiler parameters');
         fp(['set RC_COMPILER=%GM_PERLPATH% %GM_UTIL_PATH%\rccompile.pl '...
